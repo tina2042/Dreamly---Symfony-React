@@ -1,0 +1,196 @@
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    background: #A6A2DA;
+}
+
+.messages {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+.show {
+    display: block;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    font-style: normal;
+    font-weight: 500;
+}
+
+button {
+    height: calc(100vh * (50 / 900));
+    border: none;
+    border-radius: 9px;
+    background: #A6A2DA;
+    width: 100%;
+    color: #FFF;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+a {
+    width: 100%;
+}
+
+
+.submit {
+    margin-top: 1em;
+    box-shadow: 0 4px 19px 0 rgba(119, 147, 65, 0.30);
+}
+
+
+.navbar {
+    color: #444;
+
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background-color: white;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 8vh;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    width: calc(100vw / 4);
+    box-sizing: border-box;
+}
+
+.nav-link i, button i {
+    margin: 0 1vw 0 1vw;
+    color: #a6a2da;
+}
+
+form > #logoutButton i {
+    color: #9a87e2;
+}
+
+.nav-link:hover, .navbar form > button:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.navbar form > button {
+    width: calc(100vw / 4);;
+    background: none;
+    border-radius: 0;
+    color: black;
+    position: static;
+    margin: 0;
+    height: -webkit-fill-available;
+}
+
+.navbar form {
+    justify-content: center;
+    margin: 0;
+}
+
+.content {
+    margin-top: 60px;
+}
+
+/* Stylowanie przycisku */
+.floating-button {
+    position: fixed;
+    bottom: 5vh;
+    right: 3vw;
+    z-index: 999;
+}
+
+
+.floating-button button {
+    padding: 10px 20px;
+    border-radius: 35.765px;
+    width: 15vw;
+    height: fit-content;
+    background: #C9B4EC;
+    cursor: pointer;
+
+}
+
+.dropdown-list {
+    margin-top: 1em;
+    box-shadow: 0 4px 19px 0 rgba(119, 147, 65, 0.30);
+    border-radius: 35.765px;
+    background: #C9B4EC;
+    width: 30%;
+    height: calc(100vh * (50 / 900));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+
+}
+
+.dropdown-list > select {
+    background: #C9B4EC;
+    border-color: #C9B4EC;
+    color: white;
+    font-family: Poppins;
+    font-size: 1em;
+
+}
+
+#buttons {
+    display: flex;
+    margin: 0 5vw;
+    justify-content: flex-end;
+}
+
+
+@media (max-width: 700px) {
+    .nav-link > span {
+        display: none;
+    }
+
+    .floating-button {
+        right: 40%;
+        bottom: 1em;
+        width: auto;
+    }
+
+    .floating-button button {
+        width: auto;
+    }
+}

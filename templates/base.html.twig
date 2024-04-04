@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            <script src="https://kit.fontawesome.com/a99d7ad425.js" crossorigin="anonymous"></script>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@500&display=swap"
+                  rel="stylesheet">
+            <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+    {%  block navbar %}
+        <nav class="navbar">
+            <a href="{{ path('home') }}" class="nav-link">
+                <i class="fa-solid fa-house fa-2xl main"></i>
+                <span>Main page</span>
+            </a>
+            <a href="{{ path('home') }}" class="nav-link">
+                <i class="fa-solid fa-calendar-days fa-2xl calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="{{ path('home') }}" class="nav-link">
+                <i class="fa-solid fa-user fa-2xl setting"></i>
+                <span>Settings</span>
+            </a>
+            <form action="/logout" method="post">
+                <button type="submit" id="logoutButton" class="nav-link">
+                    <i class="fa-solid fa-right-from-bracket fa-2xl"></i>
+                    <span>Log out</span>
+                </button>
+            </form>
+        </nav>
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    </body>
+</html>
