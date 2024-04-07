@@ -14,60 +14,23 @@ class Comments
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $comment_id = null;
-
-    #[ORM\Column]
-    private ?int $dream_id = null;
-
-    #[ORM\Column]
-    private ?int $user_id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $comment_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $comment_date = null;
 
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Dreams $dream = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCommentId(): ?int
-    {
-        return $this->comment_id;
-    }
-
-    public function setCommentId(int $comment_id): static
-    {
-        $this->comment_id = $comment_id;
-
-        return $this;
-    }
-
-    public function getDreamId(): ?int
-    {
-        return $this->dream_id;
-    }
-
-    public function setDreamId(int $dream_id): static
-    {
-        $this->dream_id = $dream_id;
-
-        return $this;
-    }
-
-    public function getUserId(): ?int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
     }
 
     public function getCommentContent(): ?string
@@ -90,6 +53,30 @@ class Comments
     public function setCommentDate(\DateTimeInterface $comment_date): static
     {
         $this->comment_date = $comment_date;
+
+        return $this;
+    }
+
+    public function getDream(): ?Dreams
+    {
+        return $this->dream;
+    }
+
+    public function setDream(?Dreams $dream): static
+    {
+        $this->dream = $dream;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

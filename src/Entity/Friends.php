@@ -13,52 +13,39 @@ class Friends
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $friendship_id = null;
+    #[ORM\ManyToOne(inversedBy: 'friends')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $friend = null;
 
-    #[ORM\Column]
-    private ?int $user_id = null;
-
-    #[ORM\Column]
-    private ?int $friend_id = null;
+    #[ORM\ManyToOne(inversedBy: 'friends')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $base_friend = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFriendshipId(): ?int
+    public function getFriend(): ?User
     {
-        return $this->friendship_id;
+        return $this->friend;
     }
 
-    public function setFriendshipId(int $friendship_id): static
+    public function setFriend(?User $friend): static
     {
-        $this->friendship_id = $friendship_id;
+        $this->friend = $friend;
 
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getBaseFriend(): ?User
     {
-        return $this->user_id;
+        return $this->base_friend;
     }
 
-    public function setUserId(int $user_id): static
+    public function setBaseFriend(?User $base_friend): static
     {
-        $this->user_id = $user_id;
-
-        return $this;
-    }
-
-    public function getFriendId(): ?int
-    {
-        return $this->friend_id;
-    }
-
-    public function setFriendId(int $friend_id): static
-    {
-        $this->friend_id = $friend_id;
+        $this->base_friend = $base_friend;
 
         return $this;
     }

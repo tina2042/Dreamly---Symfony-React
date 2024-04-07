@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DreamsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,12 +16,6 @@ class Dreams
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $dream_id = null;
-
-    #[ORM\Column]
-    private ?int $user_id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
@@ -29,40 +25,41 @@ class Dreams
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column]
-    private ?int $privacy_id = null;
+    #[ORM\OneToOne(inversedBy: 'dream', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
-    #[ORM\Column]
-    private ?int $emotion_id = null;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Privacy $privacy = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Emotions $emotion = null;
+
+    /**
+     * @var Collection<int, Likes>
+     */
+    #[ORM\OneToMany(targetEntity: Likes::class, mappedBy: 'dream', orphanRemoval: true)]
+    private Collection $likes;
+
+    /**
+     * @var Collection<int, Comments>
+     */
+    #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'dream', orphanRemoval: true)]
+    private Collection $comments;
+
+    public function __construct()
+    {
+        $this->likes = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDreamId(): ?int
-    {
-        return $this->dream_id;
-    }
-
-    public function setDreamId(int $dream_id): static
-    {
-        $this->dream_id = $dream_id;
-
-        return $this;
-    }
-
-    public function getUserId(): ?int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
-    }
 
     public function getTitle(): ?string
     {
@@ -100,27 +97,100 @@ class Dreams
         return $this;
     }
 
-    public function getPrivacyId(): ?int
+    public function getOwner(): ?User
     {
-        return $this->privacy_id;
+        return $this->owner;
     }
 
-    public function setPrivacyId(int $privacy_id): static
+    public function setOwner(User $owner): static
     {
-        $this->privacy_id = $privacy_id;
+        $this->owner = $owner;
 
         return $this;
     }
 
-    public function getEmotionId(): ?int
+    public function getPrivacy(): ?Privacy
     {
-        return $this->emotion_id;
+        return $this->privacy;
     }
 
-    public function setEmotionId(int $emotion_id): static
+    public function setPrivacy(Privacy $privacy): static
     {
-        $this->emotion_id = $emotion_id;
+        $this->privacy = $privacy;
 
         return $this;
     }
+
+    public function getEmotion(): ?Emotions
+    {
+        return $this->emotion;
+    }
+
+    public function setEmotion(Emotions $emotion): static
+    {
+        $this->emotion = $emotion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Likes>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(Likes $like): static
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setDream($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(Likes $like): static
+    {
+        if ($this->likes->removeElement($like)) {
+            // set the owning side to null (unless already changed)
+            if ($like->getDream() === $this) {
+                $like->setDream(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comments>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setDream($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getDream() === $this) {
+                $comment->setDream(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
