@@ -16,7 +16,7 @@
         "symfony/dotenv": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
-        "symfony/maker-bundle": "^1.57",
+        "symfony/maker-bundle": "^1.58",
         "symfony/runtime": "7.0.*",
         "symfony/twig-bundle": "7.0.*",
         "symfony/yaml": "7.0.*",
