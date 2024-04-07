@@ -43,6 +43,7 @@
         <button>View all my dreams</button>
     </a>
     </div>
+    <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="my-dream">
         {% if dream is null %}
         <div id="top">
@@ -83,6 +84,7 @@
         </div>
         {% endif %}
     </div>
+    </a>
 
     <div class="friend-find">
         <h3 id="block-name">Friends dreams</h3>
@@ -98,6 +100,7 @@
     </div>
     {%  if fdreams is not null %}
     {%    for fdream in fdreams %}
+    <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="friend-dream">
         <div id="top">
 
@@ -122,6 +125,7 @@
                 </div>
             </div>
         </div>
+
 {#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}
 {#            <?php#}
 {#                $dreamId=$dream->getDreamId();#}
@@ -138,6 +142,7 @@
 {#                } ?>#}
 {#        </div>#}
     </div>
+    </a>
     {% endfor %}
     {% else  %}
     <div class="friend-dream">
