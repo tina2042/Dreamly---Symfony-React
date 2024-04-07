@@ -1,0 +1,62 @@
+.have-account-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: calc(3.7125vw); /* Wyrównanie do prawej */
+}
+
+.have-account-section > p {
+    margin-bottom: 0;
+}
+
+.have-account-section > a {
+    color: #3B5775;
+}
+
+.Sign-up {
+    font-size: 3.4em;
+    font-weight: 500;
+    align-self: flex-start; /* Wyrównanie do lewej */
+    margin-left: 2.75vw;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+}
+
+form p {
+    margin-bottom: 1vh;
+}
+
+.name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+}
+
+.name div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.name p {
+    text-align: left;
+}
+
+.name > .surname {
+    margin-left: 1.75vw;
+}
+
+.name input {
+    width: 12vw;
+}
+
+@media (max-width: 800px) {
+    .name div, .surname div {
+        width: 50%;
+    }
+
+    .name input, .surname input {
+        width: auto;
+    }
+}

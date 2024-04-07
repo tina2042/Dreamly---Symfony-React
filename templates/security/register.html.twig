@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/global_authentication.css') }}" rel="stylesheet" >
+    <link href="{{ asset('css/register.css') }}" rel="stylesheet" >
+{% endblock %}
+{% block navbar %}
+{% endblock %}
+{% block content %}
+    <div class="notes">
+        <img src="{{ asset('img/notes.svg')}}" alt="notes">
+    </div>
+
+    <div class="loginrectangle">
+        <div class="top-section">
+            <h3 class="Welcome">Welcome to <span>Dreamly</span></h3>
+            <div class="have-account-section">
+                <p>Have an Account?</p>
+                <a href="{{ path('login') }}">Sign in</a>
+            </div>
+        </div>
+
+        <h1 class="Sign-up">Sign up</h1>
+
+        <form action="/register" method="POST">
+            <p>Enter your email address</p>
+            <input name="email" type="email" placeholder="email@email.com">
+            <div class="name">
+                <div>
+                    <p>First name</p>
+                    <input name="firstname" type="text" placeholder="First name">
+                </div>
+                <div class="surname">
+                    <p>Surname</p>
+                    <input name="surname" type="text" placeholder="Surname">
+                </div>
+            </div>
+            <p>Enter your Password</p>
+            <input name="password" type="password" placeholder="Password">
+            <button type="submit" class="submit">Sign up</button>
+            <p style="color: #ABABAB;"></p>
+
+        </form>
+
+    </div>
+    <div class="sally">
+        <img src="{{ asset('img/sally.svg')}}" alt="sally">
+    </div>
+{% endblock %}
+
+{% block title %}
+Register
+{% endblock %}
+

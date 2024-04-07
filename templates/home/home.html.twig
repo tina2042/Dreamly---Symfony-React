@@ -11,11 +11,22 @@
     <div class="notes">
         <img src="{{ asset('img/notes.svg')}}" alt="notes">
     </div>
+
     <div class="add-dream-form">
         <form action="/adding_dream" method="POST">
            <input type="text" id="title" name="title" placeholder="Enter title">
             <textarea id="content" name="content" placeholder="Write your dream here"></textarea>
             <div id="buttons">
+                <div class="emotion-picker">
+                    <input type="radio" id="happy" name="emotion" value="happy">
+                    <label for="happy" class="emoji">😊</label>
+
+                    <input type="radio" id="neutral" name="emotion" value="neutral">
+                    <label for="neutral" class="emoji">😐</label>
+
+                    <input type="radio" id="sad" name="emotion" value="sad">
+                    <label for="sad" class="emoji">😢</label>
+                </div>
                 <div class="dropdown-list">
                     <select name="privacy" id="privacy">
                         <option value="Public">Public</option>
@@ -26,8 +37,12 @@
             </div>
         </form>
     </div>
+    <div id="my-dream-top">
     <h3 id="block-name">My last dream</h3>
-
+    <a href="{{ path('dreams_list') }}">
+        <button>View all my dreams</button>
+    </a>
+    </div>
     <div class="my-dream">
         {% if dream is null %}
         <div id="top">
@@ -135,7 +150,7 @@
         <img src="{{ asset('img/sally.svg')}}" alt="sally">
     </div>
     <div class="floating-button">
-        <a href='adding_dream'>
+        <a href="{{ path('add_dream') }}">
             <button>Add dream</button>
         </a>
     </div>

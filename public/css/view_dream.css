@@ -1,0 +1,56 @@
+.view-dream {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* Szerokość diva */
+    max-width: 800px; /* Maksymalna szerokość */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 5%;
+}
+
+.view-dream #top {
+    text-align: center;
+}
+
+.view-dream #bottom {
+    margin-top: 20px;
+}
+
+.view-dream img {
+    width: 20%; /* Dostosuj szerokość obrazka do swoich potrzeb */
+    height: 20%; /* Dostosuj wysokość obrazka do swoich potrzeb */
+    border-radius: 50%; /* Ustaw zaokrąglenie obrazka na 50% */
+    object-fit: cover;
+    margin-top: -5vh;
+}
+
+.view-dream p,
+.view-dream h4,
+.view-dream data,
+.view-dream .likes,
+.view-dream .comment_icon {
+    margin: 0;
+}
+.likes, .comment_icon{
+    display: flex;
+}
+.view-dream #social-icons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.view-dream .like,
+.view-dream .comment_icon i {
+    cursor: pointer;
+}
+
+.view-dream .like-amount,
+.view-dream .comment_icon p {
+    display: inline;
+    margin-left: 5px;
+}

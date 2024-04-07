@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/global_authentication.css') }}" rel="stylesheet" >
+    <link href="{{ asset('css/welcome.css') }}" rel="stylesheet" >
+{% endblock %}
+{% block navbar %}
+{% endblock %}
+{% block content %}
+<div class="notes">
+    <img src="{{ asset('img/notes.svg')}}" alt="notes">
+</div>
+
+<div class="loginrectangle">
+    <div class="top-section">
+        <h3 class="Welcome">Welcome to <span>Dreamly</span></h3>
+        <div class="description">
+            <p>Save, share and enjoy yours dreams!</p>
+        </div>
+    </div>
+    <div class="buttons">
+        <a href="{{ path('login') }}">
+            <button>Sign in</button>
+        </a>
+        <p>OR</p>
+        <a href="{{ path('register') }}">
+            <button>Sign up</button>
+        </a>
+    </div>
+    <div class="sally">
+        <img src="{{ asset('img/sally.svg')}}" alt="sally">
+    </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

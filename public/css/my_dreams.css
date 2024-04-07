@@ -1,0 +1,29 @@
+
+.dream-list {
+    width:80%;
+    display: flex;
+   flex-direction: column;
+    gap: 20px;
+}
+
+.dream-tile {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.dream-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.dream-description {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.dream-date {
+    font-size: 14px;
+    color: #666;
+}

@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}My dreams{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/my_dreams.css') }}" rel="stylesheet" >
+{% endblock %}
+
+{% block content %}
+    <div class="dream-list">
+        {% for dream in dreams %}
+            <div class="dream-tile">
+                <h2 class="dream-title">{{ dream }}</h2>
+                <p class="dream-description">{{ dream }}</p>
+                <span class="dream-date">{{ dream }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

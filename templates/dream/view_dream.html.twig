@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dream details{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/view_dream.css') }}" rel="stylesheet" >
+{% endblock %}
+{% block content %}
+    <div class="view-dream">
+    <div id="top">
+
+        <img src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1">
+        <p>Name</p>
+        <h4>Title: {{ dream }} </h4>
+        <data>01.01.2023</data>
+    </div>
+
+    <div id="bottom">
+        <p>{{ dream }} </p>
+        <div id=social-icons>
+            <div class="likes" {# data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                <div >
+                    <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
+                </div>
+                <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}>10</p>
+            </div>
+            <div class="comment_icon" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                <i class="fa-solid fa-comment fa-xl" {#data-dream-id="<?= $dream->getDreamId() ?>"#} ></i>
+                <p {#data-dream-id="<?= $dream->getDreamId() ?>"#} >{#<?= $dream->getCommentsAmount() ?>#}10</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

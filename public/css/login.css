@@ -1,0 +1,22 @@
+
+.no-account-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 3.7125vw;
+}
+
+.no-account-section > p {
+    margin-bottom: 0;
+}
+
+.no-account-section > a {
+    color: #3B5775;
+}
+
+.Sign-in {
+    font-size: 3.4em;
+    font-weight: 500;
+    align-self: flex-start;
+    margin-left: 2.75vw;
+}
