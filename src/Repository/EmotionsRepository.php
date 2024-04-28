@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Emotions;
+use App\Entity\Emotion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Emotions>
  *
- * @method Emotions|null find($id, $lockMode = null, $lockVersion = null)
- * @method Emotions|null findOneBy(array $criteria, array $orderBy = null)
- * @method Emotions[]    findAll()
- * @method Emotions[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Emotion|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Emotion|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Emotion[]    findAll()
+ * @method Emotion[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class EmotionsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Emotions::class);
+        parent::__construct($registry, Emotion::class);
     }
 
     //    /**

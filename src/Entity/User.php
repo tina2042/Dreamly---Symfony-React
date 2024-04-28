@@ -26,7 +26,7 @@ class User
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?UserDetails $detail = null;
+    private ?UserDetail $detail = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,24 +34,24 @@ class User
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?UserStatistics $userStatistics = null;
+    private ?UserStatistic $userStatistics = null;
 
     /**
-     * @var Collection<int, Dreams>
+     * @var Collection<int, Dream>
      */
-    #[ORM\OneToMany(targetEntity: Dreams::class, mappedBy: 'owner', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Dream::class, mappedBy: 'owner', orphanRemoval: true)]
     private Collection $dreams;
 
     /**
-     * @var Collection<int, Friends>
+     * @var Collection<int, Friend>
      */
-    #[ORM\OneToMany(targetEntity: Friends::class, mappedBy: 'user_1', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Friend::class, mappedBy: 'user_1', orphanRemoval: true)]
     private Collection $friends;
 
     /**
-     * @var Collection<int, Likes>
+     * @var Collection<int, Like>
      */
-    #[ORM\OneToMany(targetEntity: Likes::class, mappedBy: 'owner', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'owner', orphanRemoval: true)]
     private Collection $likes;
 
     public function __construct()
@@ -90,12 +90,12 @@ class User
         return $this;
     }
 
-    public function getDetail(): ?UserDetails
+    public function getDetail(): ?UserDetail
     {
         return $this->detail;
     }
 
-    public function setDetail(UserDetails $detail): static
+    public function setDetail(UserDetail $detail): static
     {
         $this->detail = $detail;
 
@@ -114,12 +114,12 @@ class User
         return $this;
     }
 
-    public function getUserStatistics(): ?UserStatistics
+    public function getUserStatistics(): ?UserStatistic
     {
         return $this->userStatistics;
     }
 
-    public function setUserStatistics(UserStatistics $userStatistics): static
+    public function setUserStatistics(UserStatistic $userStatistics): static
     {
         $this->userStatistics = $userStatistics;
 
@@ -127,14 +127,14 @@ class User
     }
 
     /**
-     * @return Collection<int, Dreams>
+     * @return Collection<int, Dream>
      */
     public function getDreams(): Collection
     {
         return $this->dreams;
     }
 
-    public function addDream(Dreams $dream): static
+    public function addDream(Dream $dream): static
     {
         if (!$this->dreams->contains($dream)) {
             $this->dreams->add($dream);
@@ -144,7 +144,7 @@ class User
         return $this;
     }
 
-    public function removeDream(Dreams $dream): static
+    public function removeDream(Dream $dream): static
     {
         if ($this->dreams->removeElement($dream)) {
             // set the owning side to null (unless already changed)
@@ -157,14 +157,14 @@ class User
     }
 
     /**
-     * @return Collection<int, Friends>
+     * @return Collection<int, Friend>
      */
     public function getFriends(): Collection
     {
         return $this->friends;
     }
 
-    public function addFriend(Friends $friend): static
+    public function addFriend(Friend $friend): static
     {
         if (!$this->friends->contains($friend)) {
             $this->friends->add($friend);
@@ -174,7 +174,7 @@ class User
         return $this;
     }
 
-    public function removeFriend(Friends $friend): static
+    public function removeFriend(Friend $friend): static
     {
         if ($this->friends->removeElement($friend)) {
             // set the owning side to null (unless already changed)
@@ -187,14 +187,14 @@ class User
     }
 
     /**
-     * @return Collection<int, Likes>
+     * @return Collection<int, Like>
      */
     public function getLikes(): Collection
     {
         return $this->likes;
     }
 
-    public function addLike(Likes $like): static
+    public function addLike(Like $like): static
     {
         if (!$this->likes->contains($like)) {
             $this->likes->add($like);
@@ -204,7 +204,7 @@ class User
         return $this;
     }
 
-    public function removeLike(Likes $like): static
+    public function removeLike(Like $like): static
     {
         if ($this->likes->removeElement($like)) {
             // set the owning side to null (unless already changed)

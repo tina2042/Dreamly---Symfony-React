@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FriendsRepository::class)]
 #[ApiResource]
-class Friends
+class Friend
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

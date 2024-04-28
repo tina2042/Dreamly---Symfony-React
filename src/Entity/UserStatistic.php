@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserStatisticsRepository::class)]
 #[ApiResource]
-class UserStatistics
+class UserStatistic
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

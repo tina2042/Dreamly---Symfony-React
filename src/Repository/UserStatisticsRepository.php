@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\UserStatistics;
+use App\Entity\UserStatistic;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<UserStatistics>
  *
- * @method UserStatistics|null find($id, $lockMode = null, $lockVersion = null)
- * @method UserStatistics|null findOneBy(array $criteria, array $orderBy = null)
- * @method UserStatistics[]    findAll()
- * @method UserStatistics[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserStatistic|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserStatistic|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserStatistic[]    findAll()
+ * @method UserStatistic[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class UserStatisticsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserStatistics::class);
+        parent::__construct($registry, UserStatistic::class);
     }
 
 //    /**

@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
 #[ApiResource]
-class Comments
+class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,16 +20,19 @@ class Comments
     private ?string $comment_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $comment_date = null;
+    private ?\DateTimeInterface $comment_date;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Dreams $dream = null;
+    private ?Dream $dream = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    public function __construct(){
+        $this->comment_date = new \DateTime();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -52,19 +55,12 @@ class Comments
         return $this->comment_date;
     }
 
-    public function setCommentDate(\DateTimeInterface $comment_date): static
-    {
-        $this->comment_date = $comment_date;
-
-        return $this;
-    }
-
-    public function getDream(): ?Dreams
+    public function getDream(): ?Dream
     {
         return $this->dream;
     }
 
-    public function setDream(?Dreams $dream): static
+    public function setDream(?Dream $dream): static
     {
         $this->dream = $dream;
 

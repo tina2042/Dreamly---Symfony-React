@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DreamsRepository::class)]
 #[ApiResource]
-class Dreams
+class Dream
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,7 +25,7 @@ class Dreams
     private ?string $dream_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    private ?\DateTimeInterface $date;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,26 +33,27 @@ class Dreams
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Emotions $emotion = null;
+    private ?Emotion $emotion = null;
 
     #[ORM\ManyToOne(inversedBy: 'dreams')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
     /**
-     * @var Collection<int, Comments>
+     * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'dream', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'dream', orphanRemoval: true)]
     private Collection $comments;
 
     /**
-     * @var Collection<int, Likes>
+     * @var Collection<int, Like>
      */
-    #[ORM\OneToMany(targetEntity: Likes::class, mappedBy: 'dream', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'dream', orphanRemoval: true)]
     private Collection $likes;
 
     public function __construct()
     {
+        $this->date = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
     }
@@ -91,12 +92,6 @@ class Dreams
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-
-        return $this;
-    }
 
     public function getPrivacy(): ?Privacy
     {
@@ -110,12 +105,12 @@ class Dreams
         return $this;
     }
 
-    public function getEmotion(): ?Emotions
+    public function getEmotion(): ?Emotion
     {
         return $this->emotion;
     }
 
-    public function setEmotion(?Emotions $emotion): static
+    public function setEmotion(?Emotion $emotion): static
     {
         $this->emotion = $emotion;
 
@@ -135,14 +130,14 @@ class Dreams
     }
 
     /**
-     * @return Collection<int, Comments>
+     * @return Collection<int, Comment>
      */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function addComment(Comments $comment): static
+    public function addComment(Comment $comment): static
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
@@ -152,7 +147,7 @@ class Dreams
         return $this;
     }
 
-    public function removeComment(Comments $comment): static
+    public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
@@ -165,14 +160,14 @@ class Dreams
     }
 
     /**
-     * @return Collection<int, Likes>
+     * @return Collection<int, Like>
      */
     public function getLikes(): Collection
     {
         return $this->likes;
     }
 
-    public function addLike(Likes $like): static
+    public function addLike(Like $like): static
     {
         if (!$this->likes->contains($like)) {
             $this->likes->add($like);
@@ -182,7 +177,7 @@ class Dreams
         return $this;
     }
 
-    public function removeLike(Likes $like): static
+    public function removeLike(Like $like): static
     {
         if ($this->likes->removeElement($like)) {
             // set the owning side to null (unless already changed)

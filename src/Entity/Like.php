@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LikesRepository::class)]
 #[ApiResource]
-class Likes
+class Like
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,16 +17,19 @@ class Likes
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $like_date = null;
+    private ?\DateTimeInterface $like_date ;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Dreams $dream = null;
+    private ?Dream $dream = null;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    public function __construct(){
+        $this->like_date = new \DateTime();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -37,19 +40,13 @@ class Likes
         return $this->like_date;
     }
 
-    public function setLikeDate(\DateTimeInterface $like_date): static
-    {
-        $this->like_date = $like_date;
 
-        return $this;
-    }
-
-    public function getDream(): ?Dreams
+    public function getDream(): ?Dream
     {
         return $this->dream;
     }
 
-    public function setDream(?Dreams $dream): static
+    public function setDream(?Dream $dream): static
     {
         $this->dream = $dream;
 
