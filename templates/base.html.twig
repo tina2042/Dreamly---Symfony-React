@@ -12,11 +12,9 @@
                   rel="stylesheet">
             <link rel="stylesheet" href="{{ asset('css/global.css') }}">
         {% endblock %}
-
-        {% block javascripts %}
-        {% endblock %}
     </head>
     <body>
+
     {%  block navbar %}
         <nav class="navbar">
             <a href="{{ path('home') }}" class="nav-link">
@@ -43,5 +41,28 @@
     {% block content %}
     {% endblock %}
 
+
+        {% block javascripts %}
+            <script>
+                (()=>{
+                    fetch('/api/dreams')
+                        .then(res=>res.json())
+                        .then(res=>{
+                            console.log(res["hydra:member"]);
+                            res["hydra:member"].forEach(e=>{
+                                const dream = document.querySelector('#dream-template').content.cloneNode(true);
+
+                                dream.querySelector('.dream-top h4').innerText = e.title;
+                                // dream.quer.iner = costam
+
+                                document.querySelector('#dreams-list').appendChild(dream);
+                            });
+                        })
+                        .catch(e=>{
+                            console.error('/api/dreams error: ' + JSON.stringify(e));
+                        });
+                })();
+            </script>
+        {% endblock %}
     </body>
 </html>

@@ -23,7 +23,11 @@ class UserStatistic
 
     #[ORM\Column]
     private ?int $comments_amount = null;
-
+    public function __construct(){
+        $this->dreams_amount = 0;
+        $this->like_amount = 0;
+        $this->comments_amount = 0;
+    }
     public function getId(): ?int
     {
         return $this->id;

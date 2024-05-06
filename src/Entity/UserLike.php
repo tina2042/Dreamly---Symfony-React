@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LikesRepository::class)]
 #[ApiResource]
-class Like
+class UserLike
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,7 +23,8 @@ class Like
     #[ORM\JoinColumn(nullable: false)]
     private ?Dream $dream = null;
 
-    #[ORM\ManyToOne(inversedBy: 'likes')]
+
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
@@ -52,6 +53,7 @@ class Like
 
         return $this;
     }
+
 
     public function getOwner(): ?User
     {

@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Like;
+use App\Entity\UserLike;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Likes>
  *
- * @method Like|null find($id, $lockMode = null, $lockVersion = null)
- * @method Like|null findOneBy(array $criteria, array $orderBy = null)
- * @method Like[]    findAll()
- * @method Like[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserLike|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserLike|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserLike[]    findAll()
+ * @method UserLike[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class LikesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Like::class);
+        parent::__construct($registry, UserLike::class);
     }
 
     //    /**

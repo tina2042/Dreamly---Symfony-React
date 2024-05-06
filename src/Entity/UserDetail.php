@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,9 +22,12 @@ class UserDetail
     #[ORM\Column(length: 255)]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, options: ['default' => 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'])]
     private ?string $photo = null;
 
+    public function __construct(){
+        $this->photo = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +64,7 @@ class UserDetail
 
     public function setPhoto(string $photo): static
     {
+
         $this->photo = $photo;
 
         return $this;

@@ -16,7 +16,7 @@
         <form action="/adding_dream" method="POST">
            <input type="text" id="title" name="title" placeholder="Enter title">
             <textarea id="content" name="content" placeholder="Write your dream here"></textarea>
-            <div id="buttons">
+            <div class="buttons">
                 <div class="emotion-picker">
                     <input type="radio" id="happy" name="emotion" value="happy">
                     <label for="happy" class="emoji">😊</label>
@@ -37,8 +37,8 @@
             </div>
         </form>
     </div>
-    <div id="my-dream-top">
-    <h3 id="block-name">My last dream</h3>
+    <div class="my-dream-top">
+    <h3 class="block-name">My last dream</h3>
     <a href="{{ path('dreams_list') }}">
         <button>View all my dreams</button>
     </a>
@@ -46,17 +46,17 @@
     <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="my-dream">
         {% if dream is null %}
-        <div id="top">
+        <div class"top">
             <h4>No dreams added</h4>
         </div>
         {% else %}
-        <div id="top">
+        <div class="top">
 
             <h4>{{ dream }}</h4>
             <data >01.01.2013</data>
         </div>
         <p>{{dream }}</p>
-        <div id="social-icons">
+        <div class="social-icons">
             <div class="likes" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
                 <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
                 <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>10</p>
@@ -87,22 +87,68 @@
     </a>
 
     <div class="friend-find">
-        <h3 id="block-name">Friends dreams</h3>
+        <h3 class="block-name">Friends dreams</h3>
         <div class="wrap">
             <div class="search">
                 <input type="text" class="searchTerm" placeholder="Find more friends">
                 <button type="submit" class="searchButton">
                     <i class="fa fa-search search-icon"></i>
                 </button>
-                <ul id="search-results"></ul>
+                <ul class="search-results"></ul>
             </div>
         </div>
     </div>
+    <template id="dream-template">
+        <a>
+            <div class="friend-dream">
+                <div class="dream-top">
+
+                    <img alt="dream" src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1">
+                    <p>Name</p>
+                    <h4></h4>
+                    <data>01.01.2023</data>
+                </div>
+
+                <div class="dream-bottom">
+                    <p></p>
+                    <div class="dream-social-icons">
+                        <div class="likes" {# data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                            <div >
+                                <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
+                            </div>
+                            <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}>10</p>
+                        </div>
+                        <div class="comment_icon" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                            <i class="fa-solid fa-comment fa-xl" {#data-dream-id="<?= $dream->getDreamId() ?>"#} ></i>
+                            <p {#data-dream-id="<?= $dream->getDreamId() ?>"#} >{#<?= $dream->getCommentsAmount() ?>#}10</p>
+                        </div>
+                    </div>
+                </div>
+
+                {#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}
+                {#            <?php#}
+                {#                $dreamId=$dream->getDreamId();#}
+                {#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) {#}
+                {#            return $comment->getDreamId() === $dreamId;#}
+                {#            });#}
+                {#            if (!empty($dreamComments)) {#}
+                {#            foreach ($dreamComments as $comment): ?>#}
+                {#            <div class="comment">#}
+                {#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}
+                {#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}
+                {#            </div>#}
+                {#            <?php endforeach;#}
+                {#                } ?>#}
+                {#        </div>#}
+            </div>
+        </a>
+    </template>
+    <div class="dreams-list"></div>
     {%  if fdreams is not null %}
     {%    for fdream in fdreams %}
     <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="friend-dream">
-        <div id="top">
+        <div class="top">
 
             <img src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1">
             <p>Name</p>
@@ -110,9 +156,9 @@
             <data>01.01.2023</data>
         </div>
 
-        <div id="bottom">
+        <div class="bottom">
             <p>{{ fdream }} </p>
-            <div id=social-icons>
+            <div class=social-icons>
                 <div class="likes" {# data-dream-id="<?= $dream->getDreamId() ?>"#}>
                     <div >
                         <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
@@ -146,7 +192,7 @@
     {% endfor %}
     {% else  %}
     <div class="friend-dream">
-        <div id="top">
+        <div class="top">
             <h4>No friends</h4>
         </div>
     </div>

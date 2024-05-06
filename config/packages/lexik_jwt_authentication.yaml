@@ -1,0 +1,5 @@
+lexik_jwt_authentication:
+  secret_key: '%env(resolve:JWT_SECRET_KEY)%' # You can replace this with your own secret key
+  public_key: '%env(resolve:JWT_PUBLIC_KEY)%' # You can replace this with your own public key
+  pass_phrase: '%env(JWT_PASSPHRASE)%'
+  token_ttl: '%env(JWT_TOKEN_TTL)%'

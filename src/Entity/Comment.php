@@ -6,25 +6,34 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CommentsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['read', 'write'])]
     private ?string $comment_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['read'])]
     private ?\DateTimeInterface $comment_date;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read', 'write'])]
     private ?Dream $dream = null;
+
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -66,6 +75,7 @@ class Comment
 
         return $this;
     }
+
 
     public function getOwner(): ?User
     {

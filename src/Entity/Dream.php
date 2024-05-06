@@ -8,48 +8,61 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DreamsRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Dream
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['read', 'write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['read', 'write'])]
     private ?string $dream_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['read'])]
     private ?\DateTimeInterface $date;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read', 'write'])]
     private ?Privacy $privacy = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read', 'write'])]
     private ?Emotion $emotion = null;
 
-    #[ORM\ManyToOne(inversedBy: 'dreams')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $owner = null;
 
     /**
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'dream', orphanRemoval: true)]
+    #[Groups(['read'])]
     private Collection $comments;
 
     /**
-     * @var Collection<int, Like>
+     * @var Collection<int, UserLike>
      */
-    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'dream', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: UserLike::class, mappedBy: 'dream', orphanRemoval: true)]
+    #[Groups(['read'])]
     private Collection $likes;
+
+    #[ORM\ManyToOne(inversedBy: 'dreams')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function __construct()
     {
@@ -117,17 +130,6 @@ class Dream
         return $this;
     }
 
-    public function getOwner(): ?User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?User $owner): static
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Comment>
@@ -160,14 +162,14 @@ class Dream
     }
 
     /**
-     * @return Collection<int, Like>
+     * @return Collection<int, UserLike>
      */
     public function getLikes(): Collection
     {
         return $this->likes;
     }
 
-    public function addLike(Like $like): static
+    public function addLike(UserLike $like): static
     {
         if (!$this->likes->contains($like)) {
             $this->likes->add($like);
@@ -177,7 +179,7 @@ class Dream
         return $this;
     }
 
-    public function removeLike(Like $like): static
+    public function removeLike(UserLike $like): static
     {
         if ($this->likes->removeElement($like)) {
             // set the owning side to null (unless already changed)
@@ -185,6 +187,18 @@ class Dream
                 $like->setDream(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

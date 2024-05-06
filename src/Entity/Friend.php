@@ -2,24 +2,31 @@
 
 namespace App\Entity;
 
+
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\FriendsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FriendsRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Friend
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'friends')]
+
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user_1 = null;
 
-    #[ORM\ManyToOne(inversedBy: 'friends')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user_2 = null;
 
@@ -27,6 +34,7 @@ class Friend
     {
         return $this->id;
     }
+
 
     public function getUser1(): ?User
     {

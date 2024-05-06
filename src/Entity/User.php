@@ -7,33 +7,56 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource]
-class User
+#[UniqueEntity(fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 180)]
+    #[Groups(['read', 'write'])]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    #[Groups(['read', 'write'])]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    #[Groups(['read', 'write'])]
     private ?string $password = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read', 'write'])]
     private ?UserDetail $detail = null;
 
-    #[ORM\ManyToOne]
+   /* #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Role $role = null;
+    private ?Role $role = null;*/
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read', 'write'])]
     private ?UserStatistic $userStatistics = null;
 
     /**
@@ -42,23 +65,10 @@ class User
     #[ORM\OneToMany(targetEntity: Dream::class, mappedBy: 'owner', orphanRemoval: true)]
     private Collection $dreams;
 
-    /**
-     * @var Collection<int, Friend>
-     */
-    #[ORM\OneToMany(targetEntity: Friend::class, mappedBy: 'user_1', orphanRemoval: true)]
-    private Collection $friends;
-
-    /**
-     * @var Collection<int, Like>
-     */
-    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'owner', orphanRemoval: true)]
-    private Collection $likes;
-
     public function __construct()
     {
         $this->dreams = new ArrayCollection();
-        $this->friends = new ArrayCollection();
-        $this->likes = new ArrayCollection();
+        $this->userStatistics = new UserStatistic();
     }
 
     public function getId(): ?int
@@ -78,7 +88,44 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     *
+     * @return list<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -88,6 +135,15 @@ class User
         $this->password = $password;
 
         return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getDetail(): ?UserDetail
@@ -102,7 +158,7 @@ class User
         return $this;
     }
 
-    public function getRole(): ?Role
+   /* public function getRole(): ?Role
     {
         return $this->role;
     }
@@ -112,7 +168,7 @@ class User
         $this->role = $role;
 
         return $this;
-    }
+    }*/
 
     public function getUserStatistics(): ?UserStatistic
     {
@@ -150,66 +206,6 @@ class User
             // set the owning side to null (unless already changed)
             if ($dream->getOwner() === $this) {
                 $dream->setOwner(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Friend>
-     */
-    public function getFriends(): Collection
-    {
-        return $this->friends;
-    }
-
-    public function addFriend(Friend $friend): static
-    {
-        if (!$this->friends->contains($friend)) {
-            $this->friends->add($friend);
-            $friend->setUser1($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFriend(Friend $friend): static
-    {
-        if ($this->friends->removeElement($friend)) {
-            // set the owning side to null (unless already changed)
-            if ($friend->getUser1() === $this) {
-                $friend->setUser1(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Like>
-     */
-    public function getLikes(): Collection
-    {
-        return $this->likes;
-    }
-
-    public function addLike(Like $like): static
-    {
-        if (!$this->likes->contains($like)) {
-            $this->likes->add($like);
-            $like->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLike(Like $like): static
-    {
-        if ($this->likes->removeElement($like)) {
-            // set the owning side to null (unless already changed)
-            if ($like->getOwner() === $this) {
-                $like->setOwner(null);
             }
         }
 

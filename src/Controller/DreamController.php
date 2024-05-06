@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Dream;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * @method getDoctrine()
+ */
 class DreamController extends AbstractController
 {
     #[Route('/dreams/{dream_id}', name: 'dreams', defaults:['dream_id'=>null], methods: ['GET','HEAD'])]
@@ -17,16 +21,17 @@ class DreamController extends AbstractController
         ]);
     }
     #[Route('/add_dream', name: 'add_dream')]
-    public function list(): Response
+    public function add_dream(Response $response): Response
     {
         return $this->render('dream/add_dream.html.twig');
     }
 
-    #[Route('/dreams_list', name: 'dreams_list')]
+    #[Route('/dreams_list', name: 'dreams_list', methods: ['GET', 'HEAD'])]
     public function listAll(): Response
     {
+
         return $this->render('dream/list_dreams.html.twig',
-        ['dreams'=>['Dream1', 'Dream2']]
+        ['dreams'=>["Dream", "dream2"]]
         );
 
     }

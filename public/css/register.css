@@ -50,7 +50,20 @@ form p {
 .name input {
     width: 12vw;
 }
-
+form > div {
+    display: flex;
+    flex-direction: column;
+}
+.terms{
+    flex-direction: row;
+    margin: 1em 0;
+}
+.password{
+    margin-top: 1em;
+}
+#registration_form_agreeTerms{
+    height: auto;
+}
 @media (max-width: 800px) {
     .name div, .surname div {
         width: 50%;

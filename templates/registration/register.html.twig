@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/global_authentication.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/register.css') }}" rel="stylesheet">
+{% endblock %}
+{% block navbar %}
+{% endblock %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <div class="notes">
+        <img src="{{ asset('img/notes.svg') }}" alt="notes">
+    </div>
+
+    <div class="loginrectangle">
+        <div class="top-section">
+            <h3 class="Welcome">Welcome to <span>Dreamly</span></h3>
+            <div class="have-account-section">
+                <p>Have an Account?</p>
+                <a href="{{ path('app_login') }}">Sign in</a>
+            </div>
+        </div>
+
+        <h1 class="Sign-up">Sign up</h1>
+
+        {{ form_errors(registrationForm) }}
+
+        {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        <div class="name">
+            <div>
+                <p>First name</p>
+                <input name="firstname" type="text" placeholder="First name">
+            </div>
+            <div class="surname">
+                <p>Surname</p>
+                <input name="surname" type="text" placeholder="Surname">
+            </div>
+        </div>
+        {{ form_row(registrationForm.plainPassword, {
+            label: 'Password'
+        }) }}
+        {{ form_row(registrationForm.agreeTerms) }}
+
+        <button type="submit" class="btn">Register</button>
+        {{ form_end(registrationForm) }}
+    </div>
+    <div class="sally">
+        <img src="{{ asset('img/sally.svg') }}" alt="sally">
+    </div>
+{% endblock %}

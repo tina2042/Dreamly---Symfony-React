@@ -95,7 +95,7 @@ button:hover {
     flex-direction: column;
 
 }
-#my-dream-top{
+.my-dream-top{
     display: flex;
     width: 80%;
     align-items: center;
@@ -107,15 +107,15 @@ a> button{
     margin-top: 1em;
     width: auto;
 }
-#top span {
+.top span {
     display: none;
 }
 
-.my-dream #top {
+.my-dream .top {
     display: flex;
 }
 
-.my-dream #top h4 {
+.my-dream .top h4 {
     width: 65vw;
     font-size: 2em;
     margin: 2vh 5vw;
@@ -140,13 +140,13 @@ data {
     margin-left: 10vw;
 }
 
-#block-name {
+.block-name {
     margin-left: 5vw;
     font-size: 1.5em;
     width:40%;
 }
 
-#social-icons {
+.social-icons {
     display: flex;
     align-self: flex-end;
     justify-content: space-around;
@@ -154,15 +154,15 @@ data {
     margin: 0em 2em 1em 2em;
 }
 
-#social-icons > div {
+.social-icons > div {
     display: flex;
 }
 
-#social-icons > div > p {
+.social-icons > div > p {
     margin: 0 1em;
 }
 
-#social-icons > div > i {
+.social-icons > div > i {
     margin-top: 0.5em;
 }
 
@@ -180,33 +180,33 @@ data {
 
 }
 
-.friend-dream > #top {
+.friend-dream > .top {
     display: flex;
 }
 
-.friend-dream > #top > img {
+.friend-dream > .top > img {
     margin: 1vh 2vw;
     width: 15%;
     height: fit-content;
 }
 
-.friend-dream > #top > p {
+.friend-dream > .top > p {
     margin: 2vw;
     width: 6vw;
 }
 
-.friend-dream > #top > h4 {
+.friend-dream > .top > h4 {
     margin: 2vh 2vw;
     width: 49vw;
     font-size: 2em;
     color: #808080;
 }
 
-.friend-dream > #bottom {
+.friend-dream > .bottom {
     display: flex;
 }
 
-.friend-dream > #bottom > p {
+.friend-dream > .bottom > p {
     margin-left: 14vw;
     margin-top: -3vh;
     width: 61vw;
@@ -280,7 +280,7 @@ data {
     margin-right: 5vw;
 }
 
-.friend-find > #block-name {
+.friend-find > .block-name {
     margin-left: 0;
 }
 
@@ -312,7 +312,7 @@ data {
     box-shadow: 0 4px 19px 0 rgba(119, 147, 65, 0.30);
 }
 
-#search-results {
+.search-results {
     margin-left: 10px;
     background: white;
     z-index: 11;
