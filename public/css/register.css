@@ -46,7 +46,9 @@ form p {
 .name > .surname {
     margin-left: 1.75vw;
 }
-
+input{
+    margin-bottom: 0;
+}
 .name input {
     width: 12vw;
 }

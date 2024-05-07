@@ -37,6 +37,7 @@ input {
     padding-left: 1vw;
     color: #808080;
     font-size: 0.9em;
+    margin-bottom: 1em;
 }
 
 .notes img, .sally img {
@@ -81,34 +82,7 @@ form > p:last-of-type {
     margin: 1vh 0;
 }
 
-.social-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
 
-.social-buttons > .google {
-    flex: 1.5;
-    margin-right: 5px;
-    background: #C9B4EC;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: auto;
-}
-
-.social-buttons > .google img {
-    margin-right: 10px;
-}
-
-.social-buttons > .facebook {
-    flex: 1;
-    background: #F6F6F6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 @media (max-width: 800px) {
     .loginrectangle {

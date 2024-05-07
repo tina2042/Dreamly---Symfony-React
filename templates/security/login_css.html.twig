@@ -1,17 +1,23 @@
 {% extends 'base.html.twig' %}
+{% block title %}
+    Login
+{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
-    <link href="{{ asset('css/global_authentication.css') }}" rel="stylesheet" >
-    <link href="{{ asset('css/login.css') }}" rel="stylesheet" >
+    <link href="{{ asset('css/global_authentication.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/login.css') }}" rel="stylesheet">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/login.js') }}"></script>
 {% endblock %}
 {% block navbar %}
 {% endblock %}
 {% block content %}
     <div class="notes">
-        <img src="{{ asset('img/notes.svg')}}" alt="notes">
+        <img src="{{ asset('img/notes.svg') }}" alt="notes">
     </div>
 
-    <div class="loginrectangle">
+    <div class="loginrectangle" id="login-form-container">
         <div class="top-section">
             <h3 class="Welcome">Welcome to <span>Dreamly</span></h3>
             <div class="no-account-section">
@@ -22,33 +28,32 @@
 
         <h1 class="Sign-in">Sign in</h1>
 
-        <form  method="post">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
 
-            {% if app.user %}
-                <div class="mb-3">
-                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            {% if error %}
+                <div class="messages">
+                    <p>{{ error.messageKey | trans(error.messageData, 'security') }}</p>
                 </div>
             {% endif %}
-            <label for="inputEmail">Enter your email address</label>
-            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-            <label for="inputPassword">Enter your Password </label>
-            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
-            <input type="hidden" name="_csrf_token"
-                           value="{{ csrf_token('authenticate') }}"
-            >
-            <button type="submit" class="submit">Sign in</button>
+
+        <form class="flex-column-space-around-center" id="login-form">
+
+             {% if app.user %}
+                <div class="mb-3">
+                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('logout') }}">Logout</a>
+                </div>
+            {% endif %}
+            <label for="email">Email</label>
+            <input type="text" name="email" placeholder="Email" value="{{ last_username }}" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" class="default-btn">Login</button>
         </form>
     </div>
     <div class="sally">
-        <img src="{{ asset('img/sally.svg')}}" alt="sally">
+        <img src="{{ asset('img/sally.svg') }}" alt="sally">
     </div>
+
 {% endblock %}
 
-{% block title %}
-Login
-{% endblock %}
 

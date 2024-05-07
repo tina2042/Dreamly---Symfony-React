@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,15 +16,33 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Patch(
+            denormalizationContext: [
+                'groups' => ['user:write:patch']
+            ]
+        ),
+        new Delete()
+    ],
+    normalizationContext: [
+        'groups' => ['user:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['user:write'],
+    ]
 )]
+#[UniqueEntity(fields: ['email'], message: "There is already an account with this email")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -28,7 +51,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['read', 'write'])]
+    #[Assert\NotBlank(groups: ['user:write'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\Email]
     private ?string $email = null;
 
     /**
@@ -42,12 +67,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['read', 'write'])]
+    #[Groups(['user:read', 'user:write', 'user:write:patch'])]
     private ?string $password = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Assert\Valid]
+    #[Groups(['user:read', 'user:write'])]
     private ?UserDetail $detail = null;
 
    /* #[ORM\ManyToOne]
@@ -56,13 +82,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?UserStatistic $userStatistics = null;
 
     /**
      * @var Collection<int, Dream>
      */
     #[ORM\OneToMany(targetEntity: Dream::class, mappedBy: 'owner', orphanRemoval: true)]
+    #[Groups(['user:read'])]
     private Collection $dreams;
 
     public function __construct()
