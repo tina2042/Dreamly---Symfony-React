@@ -3,18 +3,65 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
+use App\Controller\DreamApiController;
+use App\Controller\DreamController;
 use App\Repository\DreamsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DreamsRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext: [
+        'groups' => ['dream:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['dream:write']
+    ]
 )]
+#[Post(
+    uriTemplate: '/add_dream',
+    controller: DreamApiController::class,
+    denormalizationContext: [
+        'groups' => ['dream:write']
+    ])]
+#[Delete(
+    uriTemplate: '/api/remove_dream/{dream_id}',
+    uriVariables: [
+        'dream_id' => new Link(
+            fromClass: Dream::class
+        )
+    ],
+    controller: DreamApiController::class
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/dreams',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'dreams',
+            fromClass: User::class
+        )
+    ],
+    normalizationContext: [
+        'groups' => 'user:read'
+    ]
+)]
+
+#[UniqueEntity(fields: ['id'], message: "There is already a dream with this id")]
 class Dream
 {
     #[ORM\Id]
@@ -24,25 +71,29 @@ class Dream
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['dream:write', 'dream:read', 'user:read'])]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['dream:write', 'dream:read', 'user:read'])]
+    #[Assert\NotBlank]
     private ?string $dream_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['read'])]
+    #[Groups(['dream:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Type("\DateTime")]
     private ?\DateTimeInterface $date;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['dream:write', 'dream:read', 'user:read'])]
     private ?Privacy $privacy = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['dream:write', 'dream:read', 'user:read'])]
     private ?Emotion $emotion = null;
 
 
@@ -50,14 +101,14 @@ class Dream
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'dream', orphanRemoval: true)]
-    #[Groups(['read'])]
+    #[Groups(['dream:read', 'user:read'])]
     private Collection $comments;
 
     /**
      * @var Collection<int, UserLike>
      */
     #[ORM\OneToMany(targetEntity: UserLike::class, mappedBy: 'dream', orphanRemoval: true)]
-    #[Groups(['read'])]
+    #[Groups(['dream:read', 'user:read'])]
     private Collection $likes;
 
     #[ORM\ManyToOne(inversedBy: 'dreams')]

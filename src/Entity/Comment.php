@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
+use App\Controller\CommentApiController;
 use App\Repository\CommentsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +15,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    operations:[
+        new Get(),
+        new GetCollection()
+    ],
+    normalizationContext: ['groups' => ['comment:read']],
+    denormalizationContext: ['groups' => ['comment:write']]
 )]
+#[Post(
+    uriTemplate: '/{dream_id}/add_comment',
+    uriVariables: [
+        'dream_id' => new Link(
+            fromClass: Dream::class
+        )
+    ],
+    controller: CommentApiController::class,
+    denormalizationContext: [
+        'groups' => ['comment:write']
+    ])]
 class Comment
 {
     #[ORM\Id]

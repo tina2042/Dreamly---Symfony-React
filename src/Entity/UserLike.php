@@ -3,12 +3,37 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
+use App\Controller\DreamApiController;
+use App\Controller\LikeApiController;
 use App\Repository\LikesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LikesRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations:[
+        new Get(),
+        new GetCollection()
+    ],
+    normalizationContext: [ 'groups' => ['like:read'] ],
+    denormalizationContext: [ 'groups' => ['like:write'] ]
+)]
+#[Post(
+    uriTemplate: '/{dream_id}/add_like',
+    uriVariables: [
+        'dream_id' => new Link(
+            fromClass: Dream::class
+        )
+    ],
+    controller: LikeApiController::class,
+    denormalizationContext: [
+        'groups' => ['like:write']
+])]
 class UserLike
 {
     #[ORM\Id]
@@ -17,15 +42,18 @@ class UserLike
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['dream:read', 'like:read', 'like:write'])]
     private ?\DateTimeInterface $like_date ;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['dream:read', 'like:read', 'like:write'])]
     private ?Dream $dream = null;
 
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['dream:read', 'like:read', 'like:write', 'user:read'])]
     private ?User $owner = null;
 
     public function __construct(){

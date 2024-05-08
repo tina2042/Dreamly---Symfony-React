@@ -10,24 +10,26 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FriendsRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['friend:read']],
+    denormalizationContext: ['groups' => ['friend:write']],
 )]
 class Friend
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read'])]
+    #[Groups(['friend:read'])]
     private ?int $id = null;
 
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['friend:read', 'friend:write'])]
     private ?User $user_1 = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['friend:read', 'friend:write'])]
     private ?User $user_2 = null;
 
     public function getId(): ?int
