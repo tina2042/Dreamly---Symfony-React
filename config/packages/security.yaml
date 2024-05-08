@@ -10,8 +10,6 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-    role_hierarchy:
-            ROLE_ADMIN: ROLE_USER
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -30,7 +28,6 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             logout:
                 path: logout
-            entry_point: App\Security\AuthenticationEntryPoint
 #security:
 #    #enable_authenticator_manager: true
 #    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
@@ -84,12 +81,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/settings_admin, roles: ROLE_ADMIN }
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/welcome, roles: PUBLIC_ACCESS }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
-
+         - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/api/login, roles: PUBLIC_ACCESS }
+         - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
         password_hashers:

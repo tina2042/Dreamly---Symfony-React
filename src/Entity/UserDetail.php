@@ -6,12 +6,9 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserDetailsRepository::class)]
 #[ApiResource]
-
 class UserDetail
 {
     #[ORM\Id]
@@ -20,15 +17,12 @@ class UserDetail
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255, options: ['default' => 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'])]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $photo = null;
 
     public function __construct(){
