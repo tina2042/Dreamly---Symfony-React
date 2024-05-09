@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         'groups' => ['dream:write']
     ])]
 #[Delete(
-    uriTemplate: '/api/remove_dream/{dream_id}',
+    uriTemplate: '/remove_dream/{dream_id}',
     uriVariables: [
         'dream_id' => new Link(
             fromClass: Dream::class
@@ -109,7 +109,8 @@ class Dream
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['dream:write', 'dream:read', 'user:read'])]
+    #[Groups(['dream:write', 'dream:read', 'user:read',
+        'emotion:read', 'emotion:write'])]
     private ?Emotion $emotion = null;
 
 
@@ -134,7 +135,7 @@ class Dream
 
     public function __construct()
     {
-        $this->date = new \DateTime();
+        $this->date = new \DateTime('now');
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
     }

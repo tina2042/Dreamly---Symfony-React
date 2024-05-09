@@ -28,12 +28,14 @@ class DreamApiController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You must be logged in to add a dream.')]
     public function add_dream(Request $request, EntityManagerInterface $entityManager): Response
     {
+
         $data = json_decode($request->getContent(), true);
         $user = $this->getUser();
         $dream = new Dream();
 
         $dream->setTitle($data['title']);
         $dream->setDreamContent($data['content']);
+
         $dream->setOwner($user);
 
         //Set privacy and emotion

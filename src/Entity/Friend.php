@@ -5,6 +5,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
+use App\Controller\DreamApiController;
+use App\Controller\FriendApiController;
 use App\Repository\FriendsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,7 +17,12 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
     normalizationContext: ['groups' => ['friend:read']],
     denormalizationContext: ['groups' => ['friend:write']],
 )]
-
+#[Post(
+    uriTemplate: 'friends/add',
+    controller: FriendApiController::class,
+    denormalizationContext: [
+        'groups' => ['dream:write']
+    ])]
 class Friend
 {
     #[ORM\Id]
