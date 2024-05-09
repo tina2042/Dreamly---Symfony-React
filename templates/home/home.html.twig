@@ -6,7 +6,11 @@
     {{ parent() }}
     <link href="{{ asset('css/main.css') }}" rel="stylesheet" >
 {% endblock %}
-
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/home.js') }}"></script>
+    {{ encore_entry_script_tags('home') }}
+    {{ encore_entry_script_tags('home') }}
+{% endblock %}
 {% block content %}
 
     <div id="root"></div>

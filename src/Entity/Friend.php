@@ -4,15 +4,18 @@ namespace App\Entity;
 
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use App\Repository\FriendsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: FriendsRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['friend:read']],
     denormalizationContext: ['groups' => ['friend:write']],
 )]
+
 class Friend
 {
     #[ORM\Id]
@@ -25,11 +28,13 @@ class Friend
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['friend:read', 'friend:write'])]
+    #[SerializedName('user_1')]
     private ?User $user_1 = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['friend:read', 'friend:write'])]
+    #[SerializedName('user_2')]
     private ?User $user_2 = null;
 
     public function getId(): ?int
