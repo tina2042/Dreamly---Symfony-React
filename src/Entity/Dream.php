@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ]
 )]
 #[Post(
-    uriTemplate: '/add_dream',
+    uriTemplate: '/api/add_dream',
     controller: DreamApiController::class,
     denormalizationContext: [
         'groups' => ['dream:write']
@@ -113,6 +113,7 @@ class Dream
 
     #[ORM\ManyToOne(inversedBy: 'dreams')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['dream:read','dream:write', 'user:read'])]
     private ?User $owner = null;
 
     public function __construct()

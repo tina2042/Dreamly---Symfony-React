@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Dream;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * @method getDoctrine()
@@ -20,10 +23,17 @@ class DreamController extends AbstractController
             'dream'=>'Lorem ipsum'
         ]);
     }
-    #[Route('/add_dream', name: 'add_dream')]
-    public function add_dream(Response $response): Response
+    #[Route('/add_dream', name: 'add_dream' )]
+    #[IsGranted('ROLE_USER', message: 'You must be logged in to access this page')]
+    public function add_dream(Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('dream/add_dream.html.twig');
+        if ($request->isMethod('POST')) {
+            return $this->render('home/home.html.twig');
+        }
+            return $this->render('dream/add_dream.html.twig', [
+                'message' => 'add book',
+            ]);
+
     }
 
     #[Route('/dreams_list', name: 'dreams_list', methods: ['GET', 'HEAD'])]

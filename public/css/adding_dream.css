@@ -67,7 +67,9 @@ form > button {
 button:hover {
     background: #BAA0E5;
 }
-
+.cancel-btn{
+    margin-top: 1em;
+}
 
 #buttons > button, #buttons > a > button {
     border-radius: 35.765px;

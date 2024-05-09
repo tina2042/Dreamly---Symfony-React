@@ -8,6 +8,8 @@
 {% endblock %}
 
 {% block content %}
+
+    <div id="root"></div>
     <div class="notes">
         <img src="{{ asset('img/notes.svg')}}" alt="notes">
     </div>
@@ -45,11 +47,11 @@
     </div>
     <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="my-dream">
-        {% if dream is null %}
-        <div class"top">
+        {#{% if dream is null %}
+        <div class="top">
             <h4>No dreams added</h4>
         </div>
-        {% else %}
+        {% else %}#}
         <div class="top">
 
             <h4>{{ dream }}</h4>
@@ -82,7 +84,7 @@
 {#            <?php endforeach;#}
 {#            } ?>#}
         </div>
-        {% endif %}
+        {#{% endif %}#}
     </div>
     </a>
 

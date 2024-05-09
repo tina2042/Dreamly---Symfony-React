@@ -6,34 +6,13 @@
     {{ parent() }}
     <link href="{{ asset('css/adding_dream.css') }}" rel="stylesheet" >
 {% endblock %}
-
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/add_dream.js') }}"></script>
+    {{ encore_entry_script_tags('add_dream') }}
+    {{ encore_entry_script_tags('add_dream') }}
+{% endblock %}
 {% block content %}
-    <div class="add-dream-form">
-        <form action="/adding_dream" method="POST">
-            <input type="text" id="title" name="title" placeholder="Enter title">
-            <textarea id="content" name="content" placeholder="Write your dream here"></textarea>
-            <div id="buttons">
-                <div class="emotion-picker">
-                    <input type="radio" id="happy" name="emotion" value="happy">
-                    <label for="happy" class="emoji">😊</label>
 
-                    <input type="radio" id="neutral" name="emotion" value="neutral">
-                    <label for="neutral" class="emoji">😐</label>
+        <div id="root"></div>
 
-                    <input type="radio" id="sad" name="emotion" value="sad">
-                    <label for="sad" class="emoji">😢</label>
-                </div>
-                <div class="dropdown-list">
-                    <select name="privacy" id="privacy">
-                        <option value="Public">Public</option>
-                        <option value="Private">Private</option>
-                    </select>
-                </div>
-                <a href="{{ path('home') }}">
-                    <button id="cancel" type="button">Cancel</button>
-                </a>
-                <button type="submit" class="submit">Add Dream</button>
-            </div>
-        </form>
-    </div>
 {% endblock %}

@@ -1,10 +1,12 @@
 <?php
 namespace App\Controller;
+use App\Entity\Dream;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DreamApiController extends AbstractController
 {
@@ -18,9 +20,30 @@ class DreamApiController extends AbstractController
             return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
         }
     }
-    #[Route('/api/add_dream', name: 'add_dream', methods: ['POST'])]
+    #[Route('/api/add_dream', name: 'add_dream_api', methods: ['POST'])]
+    #[IsGranted('ROLE_USER', message: 'You must be logged in to add a dream.')]
     public function add_dream(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $data = json_decode($request->getContent(), true);
+        $user = $this->getUser();
+        $dream = new Dream();
+
+        $dream->setTitle($data['title']);
+        $dream->setDreamContent($data['content']);
+        $dream->setOwner($user);
+
+        //Set privacy and emotion
+        $privacyRepository = $entityManager->getRepository('App\Entity\Privacy');
+        $privacy = $privacyRepository->findOneBy(['privacy_name' => $data['privacy']]);
+        $dream->setPrivacy($privacy);
+
+        $emotionRepository = $entityManager->getRepository('App\Entity\Emotion');
+        $emotion = $emotionRepository->findOneBy(['emotion_name' => $data['emotion']]);
+        $dream->setEmotion($emotion);
+
+        $entityManager->persist($dream);
+        $entityManager->flush();
+
         return $this->json([
             'message' => 'ok'
         ]);

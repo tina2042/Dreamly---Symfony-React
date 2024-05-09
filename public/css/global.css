@@ -163,7 +163,7 @@ form > #logoutButton i {
     margin-left: 2rem;
 }
 
-.dropdown-list > select {
+.dropdown-list > label> select {
     background: #C9B4EC;
     border-color: #C9B4EC;
     color: white;
