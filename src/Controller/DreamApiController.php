@@ -18,12 +18,13 @@ class DreamApiController extends AbstractController
             return $this->add_dream($request, $entityManager);
         } elseif ($request->isMethod('DELETE')) {
             return $this->remove_dream($request, $entityManager);
-        } elseif ($request->isMethod('GET')){
+        } elseif ($request->isMethod('GET')) {
             return $this->get_user_dreams($request, $entityManager);
         } else {
             return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
         }
     }
+
     #[Route('/api/dreams', name: 'dreams', methods: ['GET'])]
     #[IsGranted('ROLE_USER', message: 'You must be logged in to see dreams.')]
     private function get_user_dreams(Request $request, EntityManagerInterface $entityManager): Response
@@ -80,12 +81,12 @@ class DreamApiController extends AbstractController
             'message' => 'ok'
         ]);
     }
-    #[Route('/api/remove_dream/{dream_id}', name:'remove_dream', methods: ['DELETE'])]
+
+    #[Route('/api/remove_dream/{dream_id}', name: 'remove_dream', methods: ['DELETE'])]
     public function remove_dream(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->json([
             'message' => 'ok'
         ]);
     }
-
 }
