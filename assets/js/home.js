@@ -11,9 +11,10 @@ const FriendsDreams = () => {
             try {
                 const response = await axios.get('/api/friends/dreams',
                     {headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }});
+
+                    'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                }});
                 setFriends(response.data.friend);
             } catch (error) {
                 console.error('Error fetching friends dreams:', error);

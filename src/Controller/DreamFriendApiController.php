@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+
 class DreamFriendApiController extends AbstractController
 {
     public function __invoke(Request $request, EntityManagerInterface $entityManager): Response
@@ -31,17 +32,25 @@ class DreamFriendApiController extends AbstractController
         $userId=$user->getId();
         $friendsRepository = $entityManager->getRepository(Friend::class);
         $friends = $friendsRepository->findBy(['user_1' => $userId]);
-        if($friends==null){
-            $friends=$friendsRepository->findBy(['user_2' => $userId]);
+
+        $friendsDreamsArray=[];
+        foreach ($friends as $friend)
+        {
+            //Zwraca id użytkownika
+            $friendsDreamsArray[]=$friend->getUser2()->getDreams();
         }
+
         if($friends==null){
             return $this->json([
-                'friend' => null
+                'friendsDreams' => null
+
             ]);
         }
 
         return $this->json([
-            'friend' => $friends
+
+            'friendsDreams' => $friendsDreamsArray
+
         ]);
     }
 
