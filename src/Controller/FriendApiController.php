@@ -25,6 +25,8 @@ class FriendApiController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You must be logged in to add friend.')]
     public function add_friend(Request $request, EntityManagerInterface $entityManager):Response
     {
+        //Kontroler służy do wstawiania dwóch wierszy do bazy zamiast jednego,
+        //dzięki temu wyszukiwanie znajomego bedzie tylko po user_1
         $requestData = json_decode($request->getContent(), true);
 
         $user1Id = $requestData['user_1'];//wtedy w post trzeba podac samo id, nie "/api/users/id"

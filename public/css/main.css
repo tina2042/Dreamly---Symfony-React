@@ -66,7 +66,7 @@ textarea {
     background: #D9D9D9;
 }
 
-form button , a button{
+form button , a button, .dream-list-btn{
 
     right: -10vh;
     border-radius: 35.765px;
@@ -75,7 +75,14 @@ form button , a button{
     left: 30vw;
     margin-bottom: 1em;
 }
-
+.cancel-btn{
+    margin-top: 1em;
+    background: #ADADAD;
+    margin-right: 0.5em;
+}
+#root{
+    width:100%;
+}
 button:hover {
     background: #BAA0E5;
 }
@@ -99,6 +106,7 @@ button:hover {
     display: flex;
     width: 80%;
     align-items: center;
+    justify-content: space-between;
 }
 a{
     text-align: right;
@@ -289,9 +297,11 @@ data {
     height: 3em;
     display: flex;
     position: relative;
-    z-index: 1111;
+   /* z-index: 1111;*/
 }
-
+.search > div{
+    display: flex;
+}
 .searchTerm {
     width: 30vw;
     height: 100%;

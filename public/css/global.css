@@ -139,7 +139,7 @@ form > #logoutButton i {
 }
 
 
-.floating-button button {
+.floating-button  {
     padding: 10px 20px;
     border-radius: 35.765px;
     width: 15vw;
@@ -196,7 +196,7 @@ form > #logoutButton i {
         width: auto;
     }
 
-    .floating-button button {
+    .floating-button  {
         width: auto;
     }
 }

@@ -6,11 +6,20 @@
     {{ parent() }}
     <link href="{{ asset('css/main.css') }}" rel="stylesheet" >
 {% endblock %}
-
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/home.js') }}"></script>
+    {{ encore_entry_script_tags('home') }}
+{% endblock %}
 {% block content %}
-
-    <div id="root"></div>
     <div class="notes">
+        <img src="{{ asset('img/notes.svg')}}" alt="notes" />
+    </div>
+    <div id="root">
+    </div>
+    <div class="sally">
+        <img src="{{ asset('img/sally.svg')}}" alt="sally">
+    </div>
+    {#<div class="notes">
         <img src="{{ asset('img/notes.svg')}}" alt="notes">
     </div>
 
@@ -47,11 +56,11 @@
     </div>
     <a href="{{ path('dreams', {'dream_id': 123}) }}" class="non-visible">
     <div class="my-dream">
-        {#{% if dream is null %}
+        #}{#{% if dream is null %}
         <div class="top">
             <h4>No dreams added</h4>
         </div>
-        {% else %}#}
+        {% else %}#}{#
         <div class="top">
 
             <h4>{{ dream }}</h4>
@@ -59,32 +68,32 @@
         </div>
         <p>{{dream }}</p>
         <div class="social-icons">
-            <div class="likes" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
-                <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
-                <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>10</p>
+            <div class="likes" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
+                <i class="fa-solid fa-heart fa-xl like" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#></i>
+                <p class="like-amount" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>10</p>
             </div>
-            <div class="comment_icon" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
-                <i class="fa-solid fa-comment fa-xl" {#data-dream-id="<?= $dream->getDreamId() ?>"#} ></i>
-                <p {#data-dream-id="<?= $dream->getDreamId() ?>"#} > 10 </p>
+            <div class="comment_icon" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
+                <i class="fa-solid fa-comment fa-xl" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# ></i>
+                <p #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# > 10 </p>
             </div>
         </div>
-        <div class="dream-comments" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
-{#            <?php#}
-{#            $dreamId=$dream->getDreamId();#}
-{#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) {#}
-{#            return $comment->getDreamId() === $dreamId;#}
-{#            });#}
+        <div class="dream-comments" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
+#}{#            <?php#}{#
+#}{#            $dreamId=$dream->getDreamId();#}{#
+#}{#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) #}{#}{#
+#}{#            return $comment->getDreamId() === $dreamId;#}{#
+#}{#            });#}{#
 
-{#            if (!empty($dreamComments)) {#}
-{#            foreach ($dreamComments as $comment): ?>#}
-{#            <div class="comment">#}
-{#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}
-{#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}
-{#            </div>#}
-{#            <?php endforeach;#}
-{#            } ?>#}
+#}{#            if (!empty($dreamComments)) #}{#}{#
+#}{#            foreach ($dreamComments as $comment): ?>#}{#
+#}{#            <div class="comment">#}{#
+#}{#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}{#
+#}{#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}{#
+#}{#            </div>#}{#
+#}{#            <?php endforeach;#}{#
+#}{#            } ?>#}{#
         </div>
-        {#{% endif %}#}
+        #}{#{% endif %}#}{#
     </div>
     </a>
 
@@ -114,34 +123,34 @@
                 <div class="dream-bottom">
                     <p></p>
                     <div class="dream-social-icons">
-                        <div class="likes" {# data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                        <div class="likes" #}{# data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
                             <div >
-                                <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
+                                <i class="fa-solid fa-heart fa-xl like" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#></i>
                             </div>
-                            <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}>10</p>
+                            <p class="like-amount" #}{#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}{#>10</p>
                         </div>
-                        <div class="comment_icon" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
-                            <i class="fa-solid fa-comment fa-xl" {#data-dream-id="<?= $dream->getDreamId() ?>"#} ></i>
-                            <p {#data-dream-id="<?= $dream->getDreamId() ?>"#} >{#<?= $dream->getCommentsAmount() ?>#}10</p>
+                        <div class="comment_icon" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
+                            <i class="fa-solid fa-comment fa-xl" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# ></i>
+                            <p #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# >#}{#<?= $dream->getCommentsAmount() ?>#}{#10</p>
                         </div>
                     </div>
                 </div>
 
-                {#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}
-                {#            <?php#}
-                {#                $dreamId=$dream->getDreamId();#}
-                {#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) {#}
-                {#            return $comment->getDreamId() === $dreamId;#}
-                {#            });#}
-                {#            if (!empty($dreamComments)) {#}
-                {#            foreach ($dreamComments as $comment): ?>#}
-                {#            <div class="comment">#}
-                {#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}
-                {#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}
-                {#            </div>#}
-                {#            <?php endforeach;#}
-                {#                } ?>#}
-                {#        </div>#}
+                #}{#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}{#
+                #}{#            <?php#}{#
+                #}{#                $dreamId=$dream->getDreamId();#}{#
+                #}{#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) #}{#}{#
+                #}{#            return $comment->getDreamId() === $dreamId;#}{#
+                #}{#            });#}{#
+                #}{#            if (!empty($dreamComments)) #}{#}{#
+                #}{#            foreach ($dreamComments as $comment): ?>#}{#
+                #}{#            <div class="comment">#}{#
+                #}{#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}{#
+                #}{#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}{#
+                #}{#            </div>#}{#
+                #}{#            <?php endforeach;#}{#
+                #}{#                } ?>#}{#
+                #}{#        </div>#}{#
             </div>
         </a>
     </template>
@@ -161,34 +170,34 @@
         <div class="bottom">
             <p>{{ fdream }} </p>
             <div class=social-icons>
-                <div class="likes" {# data-dream-id="<?= $dream->getDreamId() ?>"#}>
+                <div class="likes" #}{# data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
                     <div >
-                        <i class="fa-solid fa-heart fa-xl like" {#data-dream-id="<?= $dream->getDreamId() ?>"#}></i>
+                        <i class="fa-solid fa-heart fa-xl like" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#></i>
                     </div>
-                    <p class="like-amount" {#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}>10</p>
+                    <p class="like-amount" #}{#data-dream-id="<?= $dream->getDreamId() ?>"><?= $dream->getLikes() ?>#}{#>10</p>
                 </div>
-                <div class="comment_icon" {#data-dream-id="<?= $dream->getDreamId() ?>"#}>
-                    <i class="fa-solid fa-comment fa-xl" {#data-dream-id="<?= $dream->getDreamId() ?>"#} ></i>
-                    <p {#data-dream-id="<?= $dream->getDreamId() ?>"#} >{#<?= $dream->getCommentsAmount() ?>#}10</p>
+                <div class="comment_icon" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{#>
+                    <i class="fa-solid fa-comment fa-xl" #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# ></i>
+                    <p #}{#data-dream-id="<?= $dream->getDreamId() ?>"#}{# >#}{#<?= $dream->getCommentsAmount() ?>#}{#10</p>
                 </div>
             </div>
         </div>
 
-{#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}
-{#            <?php#}
-{#                $dreamId=$dream->getDreamId();#}
-{#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) {#}
-{#            return $comment->getDreamId() === $dreamId;#}
-{#            });#}
-{#            if (!empty($dreamComments)) {#}
-{#            foreach ($dreamComments as $comment): ?>#}
-{#            <div class="comment">#}
-{#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}
-{#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}
-{#            </div>#}
-{#            <?php endforeach;#}
-{#                } ?>#}
-{#        </div>#}
+#}{#        <div class="dream-comments" data-dream-id="<?= $dream->getDreamId() ?>">#}{#
+#}{#            <?php#}{#
+#}{#                $dreamId=$dream->getDreamId();#}{#
+#}{#            $dreamComments = array_filter($comments, function($comment) use ($dreamId) #}{#}{#
+#}{#            return $comment->getDreamId() === $dreamId;#}{#
+#}{#            });#}{#
+#}{#            if (!empty($dreamComments)) #}{#}{#
+#}{#            foreach ($dreamComments as $comment): ?>#}{#
+#}{#            <div class="comment">#}{#
+#}{#                <p class="name"><?= $comment->getOwner()->getName(); ?></p>#}{#
+#}{#                <p class="comment-text"><?= $comment->getCommentContent() ?></p>#}{#
+#}{#            </div>#}{#
+#}{#            <?php endforeach;#}{#
+#}{#                } ?>#}{#
+#}{#        </div>#}{#
     </div>
     </a>
     {% endfor %}
@@ -206,5 +215,5 @@
         <a href="{{ path('add_dream') }}">
             <button>Add dream</button>
         </a>
-    </div>
+    </div>#}
 {% endblock %}
