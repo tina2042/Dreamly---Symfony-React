@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -88,32 +87,5 @@ class DreamApiController extends AbstractController
             'message' => 'ok'
         ]);
     }
-
-    #[Route('/api/dreams', name: 'dreams', methods: ['GET'])]
-    #[IsGranted('ROLE_USER', message: 'You must be logged in to see dreams.')]
-    private function get_user_dreams(Request $request, EntityManagerInterface $entityManager): Response
-    {
-
-        $userId = $this->getUser()->getId();
-        $userRepository = $entityManager->getRepository(User::class);
-        $user = $userRepository->find($userId);
-        $dreams = $user->getDreams();
-
-        $dreamsData = [];
-        foreach ($dreams as $dream) {
-            $dreamsData[] = [
-                'ownerName' => $dream->getOwner()->getDetail()->getName(),
-                'id' => $dream->getId(),
-                'title' => $dream->getTitle(),
-                'content' => $dream->getDreamContent(),
-                'privacy' => $dream->getPrivacy()->getPrivacyName(),
-                'emotion' => $dream->getEmotion()->getEmotionName(),
-                'date' => $dream->getDate()->format('Y-m-d H:i:s')
-            ];
-        }
-
-        return new JsonResponse($dreamsData);
-    }
-
 
 }
