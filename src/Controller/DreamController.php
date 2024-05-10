@@ -27,9 +27,9 @@ class DreamController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You must be logged in to access this page')]
     public function add_dream(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ($request->isMethod('POST')) {
+        /*if ($request->isMethod('POST')) {
             return $this->render('home/home.html.twig');
-        }
+        }*/
             return $this->render('dream/add_dream.html.twig', [
                 'message' => 'add book',
             ]);

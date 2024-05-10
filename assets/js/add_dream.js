@@ -53,7 +53,9 @@ class Add_dream extends React.Component {
             .then(response => {
                 // Handle success, maybe redirect or update state
                 console.log(response.data);
-                window.location.href='/home';
+
+                window.location.href = '/home';
+
             })
             .catch(error => {
 
@@ -91,7 +93,7 @@ class Add_dream extends React.Component {
                                 </select>
                             </label>
                         </div>
-                        <button type="button" className="cancel-btn" onClick={() => {
+                        <button type="button" className={"cancel-btn"} onClick={() => {
                             window.location.href = '/home'
                         }}>Cancel
                         </button>

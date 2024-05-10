@@ -7,8 +7,6 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import '../styles/app.css';
-/*import React from 'react';*/
-/*import axios from 'axios';*/
 import React from 'react';
 import axios from 'axios';
 import {createRoot} from 'react-dom/client';
@@ -24,8 +22,7 @@ class Home extends React.Component {
             privacy: 'PUBLIC', // Default value
             userDreams: [],
             userFriendDreams: []
-        };
-
+        }
     }
 
     handleChange = (e) => {
@@ -140,32 +137,32 @@ class Home extends React.Component {
 
         const FriendDreamItem = ({dream}) => {
             return (
-                    <div key={dream.id} className="friend-dream">
-                        <div className="top">
-                            <img alt="dream"
-                                 src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
-                            <p>{dream.ownerName}</p>
-                            <h4>{dream.title}</h4>
-                            <data>{dream.date}</data>
-                        </div>
-                        <div className="bottom">
-                            <p>{dream.content}</p>
-                            <div className="social-icons">
-                                <div className="likes">
-                                    <i className="fa-solid fa-heart fa-xl like"></i>
-                                    <p className="like-amount">{dream.likes}</p>
-                                </div>
-                                <div className="comment_icon">
-                                    <i className="fa-solid fa-comment fa-xl"></i>
-                                    <p>{dream.commentsAmount}</p>
-                                </div>
+                <div key={dream.id} className="friend-dream">
+                    <div className="top">
+                        <img alt="dream"
+                             src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
+                        <p>{dream.ownerName}</p>
+                        <h4>{dream.title}</h4>
+                        <data>{dream.date}</data>
+                    </div>
+                    <div className="bottom">
+                        <p>{dream.content}</p>
+                        <div className="social-icons">
+                            <div className="likes">
+                                <i className="fa-solid fa-heart fa-xl like"></i>
+                                <p className="like-amount">{dream.likes}</p>
+                            </div>
+                            <div className="comment_icon">
+                                <i className="fa-solid fa-comment fa-xl"></i>
+                                <p>{dream.commentsAmount}</p>
                             </div>
                         </div>
-                    </div>)
+                    </div>
+                </div>)
         }
         let latestDream = null;
-        if(userDreams.length >0){
-            latestDream=null;
+        if (userDreams.length > 0) {
+            latestDream = null;
         }
         latestDream = userDreams[userDreams.length - 1];
         return (
@@ -208,7 +205,7 @@ class Home extends React.Component {
                     </form>
                 </div>
                 {latestDream != null ? (
-                    <UserDreamItem dream={latestDream} />
+                    <UserDreamItem dream={latestDream}/>
                 ) : (
                     <Message message="No dreams added"/>
                 )}
