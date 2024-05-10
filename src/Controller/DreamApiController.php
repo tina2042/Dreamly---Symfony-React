@@ -43,7 +43,9 @@ class DreamApiController extends AbstractController
                 'content' => $dream->getDreamContent(),
                 'privacy' => $dream->getPrivacy()->getPrivacyName(),
                 'emotion' => $dream->getEmotion()->getEmotionName(),
-                'date' => $dream->getDate()->format('Y-m-d H:i:s')
+                'date' => $dream->getDate()->format('Y-m-d H:i:s'),
+                'likes' => $dream->getLikes()->count(),
+                'commentsAmount' => $dream->getComments()->count(),
             ];
         }
 
