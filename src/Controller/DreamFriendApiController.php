@@ -6,6 +6,7 @@ use App\Entity\Friend;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,27 +32,49 @@ class DreamFriendApiController extends AbstractController
         $user = $userRepository->find($userIdentifier);
         $userId=$user->getId();
         $friendsRepository = $entityManager->getRepository(Friend::class);
-        $friends = $friendsRepository->findBy(['user_1' => $userId]);
 
-        $friendsDreamsArray=[];
-        foreach ($friends as $friend)
-        {
-            //Zwraca id użytkownika
-            $friendsDreamsArray[]=$friend->getUser2()->getDreams();
+        $friendIds = $friendsRepository->findBy(['user_1' => $userId]);
+        $friends=[];
+        foreach ($friendIds as $friendId){
+            $friends[] = $userRepository->find($friendId);
         }
+
 
         if($friends==null){
             return $this->json([
-                'friendsDreams' => null
-
+                'friendDreams' => null
             ]);
         }
+        $friendDreamsAll = [];
+        foreach ($friends as $friend){
+            if($friend!=null) {
+                $friendDreamsAll = array_merge($friendDreamsAll, $friend->getDreams()->toArray());
+            }
+        }
+        $friendDreams=[];
+        foreach ($friendDreamsAll as $dream){
+            if($dream->getPrivacy()->getPrivacyName()!='PRIVATE'){
+                $friendDreams[]=$dream;
+            }
+        }
 
-        return $this->json([
+        $dreamsData = [];
+        foreach ($friendDreams as $dream) {
+            $dreamsData[] = [
+                'ownerName' => $dream->getOwner()->getDetail()->getName(),
+                //'id' => $dream->getId(),
+                'title' => $dream->getTitle(),
+                'content' => $dream->getDreamContent(),
+                //'privacy' => $dream->getPrivacy()->getPrivacyName(),
+                'emotion' => $dream->getEmotion()->getEmotionName(),
+                'date' => $dream->getDate()->format('Y-m-d'),
+                'likes' => $dream->getLikes()->count(),
+                'commentsAmount' => $dream->getComments()->count(),
+            ];
+        }
 
-            'friendsDreams' => $friendsDreamsArray
+        return new JsonResponse($dreamsData);
 
-        ]);
     }
 
 }
