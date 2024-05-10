@@ -22,7 +22,7 @@ class Add_dream extends React.Component {
         this.state = {
             title: '',
             content: '',
-            emotion: '',
+            emotion: 'HAPPY',
             privacy: 'PUBLIC' // Default value
         };
     }
@@ -53,6 +53,7 @@ class Add_dream extends React.Component {
             .then(response => {
                 // Handle success, maybe redirect or update state
                 console.log(response.data);
+                window.location.href='/home';
             })
             .catch(error => {
 

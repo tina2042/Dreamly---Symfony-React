@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Controller\DreamApiController;
 use App\Controller\DreamController;
+use App\Controller\DreamFriendApiController;
 use App\Repository\DreamsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection(),
+        //new GetCollection(),
     ],
     normalizationContext: [
         'groups' => ['dream:read']
@@ -32,6 +33,21 @@ use Symfony\Component\Validator\Constraints as Assert;
         'groups' => ['dream:write']
     ]
 )]
+#[GetCollection(
+    uriTemplate: '/dreams',
+    controller: DreamApiController::class,
+    normalizationContext: [
+        'groups' => ['dream:read']
+    ]
+)]
+#[GetCollection(
+    uriTemplate: '/friends/dreams',
+    controller: DreamFriendApiController::class,
+    normalizationContext: [
+        'groups' => ['dream:read']
+    ]
+)]
+
 #[Post(
     uriTemplate: '/api/add_dream',
     controller: DreamApiController::class,
