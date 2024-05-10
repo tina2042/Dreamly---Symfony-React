@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use function Sodium\add;
+
 
 class DreamFriendApiController extends AbstractController
 {
@@ -32,6 +32,7 @@ class DreamFriendApiController extends AbstractController
         $userId=$user->getId();
         $friendsRepository = $entityManager->getRepository(Friend::class);
         $friends = $friendsRepository->findBy(['user_1' => $userId]);
+
         $friendsDreamsArray=[];
         foreach ($friends as $friend)
         {
@@ -42,11 +43,14 @@ class DreamFriendApiController extends AbstractController
         if($friends==null){
             return $this->json([
                 'friendsDreams' => null
+
             ]);
         }
 
         return $this->json([
+
             'friendsDreams' => $friendsDreamsArray
+
         ]);
     }
 

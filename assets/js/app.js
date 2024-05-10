@@ -24,6 +24,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        //dodac header do zapytania
         axios.get('/api/dreams')
             .then(response => {
                 // Dostęp do danych w hydra:member

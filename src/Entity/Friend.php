@@ -5,12 +5,14 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Controller\DreamApiController;
+
 use App\Controller\FriendApiController;
 use App\Repository\FriendsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
+
+use Symfony\Component\Serializer\Annotation\SerializedName;
+
 
 #[ORM\Entity(repositoryClass: FriendsRepository::class)]
 #[ApiResource(

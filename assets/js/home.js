@@ -11,6 +11,7 @@ const FriendsDreams = () => {
             try {
                 const response = await axios.get('/api/friends/dreams',
                     {headers: {
+
                     'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                 }});
