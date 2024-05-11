@@ -133,9 +133,11 @@ class Home extends React.Component {
             );
         };
         const Message = ({message}) => (
-            <div>
-                <h4>{message}</h4>
-            </div>
+
+                <div className="top">
+                    <h4>{message}</h4>
+                </div>
+
         );
 
         const FriendDreamItem = ({dream}) => {
@@ -208,9 +210,21 @@ class Home extends React.Component {
                     </form>
                 </div>
                 {latestDream != null ? (
+
                     <UserDreamItem dream={latestDream} />
                 ) : (
-                    <Message message="No dreams added"/>
+                    <div>
+                        <div className="my-dream-top">
+                            <h3 className="block-name">My last dream</h3>
+                            <button type="button" className="dream-list-btn" onClick={() => {
+                                window.location.href = '/dreams_list'
+                            }}>View all my dreams
+                            </button>
+                        </div>
+                        <div className="my-dream">
+                            <Message message="No dreams added" divName="my-dream"/>
+                        </div>
+                    </div>
                 )}
 
                 <div className="friend-find">
@@ -232,7 +246,9 @@ class Home extends React.Component {
                         <FriendDreamItem key={dream.id} dream={dream}/>
                     ))
                 ) : (
-                    <Message message="Add more friends to see their dreams"/>
+                    <div className="friend-dream">
+                        <Message message="Add more friends to see their dreams"/>
+                    </div>
                 )}
                 <button className="floating-button" onClick={() => {
                     window.location.href = '/add_dream'
