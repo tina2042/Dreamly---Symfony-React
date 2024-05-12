@@ -8,8 +8,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
-use App\Controller\DreamApiController;
-use App\Controller\UserApiController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,13 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource(
     operations: [
-        new Get(
-            uriTemplate: '/user_detail',
-            controller: UserApiController::class,
-            normalizationContext: [
-                'groups' => ['user:read']
-            ]
-        ),
+        new Get(),
         new GetCollection(),
         new Post(),
         new Patch(
@@ -48,13 +40,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     denormalizationContext: [
         'groups' => ['user:write'],
-    ]
-)]
-#[Get(
-    uriTemplate: '/user_detail',
-    controller: UserApiController::class,
-    normalizationContext: [
-        'groups' => ['user:read']
     ]
 )]
 #[UniqueEntity(fields: ['email'], message: "There is already an account with this email")]
@@ -88,6 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Valid]
     #[Groups(['user:read', 'user:write'])]
     private ?UserDetail $detail = null;
 

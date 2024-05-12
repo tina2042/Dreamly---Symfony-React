@@ -1,4 +1,9 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/admin_profile.css') }}" rel="stylesheet" >
+    <link href="{{ asset('css/user_profile.css') }}" rel="stylesheet" >
+{% endblock %}
 
 {% block content %}
 

@@ -1,0 +1,98 @@
+.other, .top {
+    margin-left: 2em;
+    width: 45vw;
+}
+
+.two_panels {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+
+.admin-panel {
+    margin-top: 15vh;
+    display: flex;
+    flex-direction: column;
+    margin-left: 2em;
+    margin-right: 2em;
+    width: 45vw;
+    justify-content: unset;
+    align-items: unset;
+    text-align: center;
+
+}
+
+.user-info > img {
+    margin: 1em 1em;
+    width: 10vh;
+    height: 10vh;
+}
+
+.user-info {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 110, 233, 0.06);
+    box-shadow: 0 4px 20px 0 rgba(0, 110, 233, 0.02);
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1em;
+    background: white;
+
+}
+
+.session-details {
+    width: 50vw;
+}
+
+.small-btn {
+    align-self: center;
+    margin-right: 1em;
+    cursor: pointer;
+    width: 50%;
+}
+
+.nav-link > .setting {
+    color: #9a87e2;
+}
+.user_settings{
+    margin-top: 4vh;
+    width: unset;
+}
+.email{
+    width: 200px;
+    margin-top: 2.5em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 800px) {
+    .two_panels {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .user_settings {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .other, .top {
+        margin-left: 0;
+        width: 90%;
+    }
+
+    .admin-panel {
+        margin-left: 0;
+        margin-top: 2em;
+        width: 100%;
+        align-items: center;
+    }
+
+    .user-info {
+        width: 90%;
+    }
+
+}

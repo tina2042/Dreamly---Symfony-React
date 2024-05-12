@@ -41,7 +41,7 @@ class Home extends React.Component {
 
         const {title, content, emotion, privacy} = this.state;
         const token = localStorage.getItem('jwt');
-        console.log(token);
+        //console.log(token);
         axios.post('/api/add_dream', {
             title,
             content,
@@ -55,8 +55,14 @@ class Home extends React.Component {
         })
             .then(response => {
                 // Handle success, maybe redirect or update state
-                console.log(response.data);
+                //console.log(response.data);
                 //message that dream has been added
+                this.setState({
+                    title: '',
+                    content: '',
+                    emotion: 'HAPPY',
+                    privacy: 'PUBLIC',
+                });
             })
             .catch(error => {
                 // Handle error
@@ -67,7 +73,7 @@ class Home extends React.Component {
     async componentDidMount() {
 
         const token = localStorage.getItem('jwt');
-        console.log(token);
+
         await axios.get('/api/dreams', {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -78,7 +84,7 @@ class Home extends React.Component {
                 const fetchData = response.data;
                 this.setState({userDreams: fetchData})
                 this.setState({isLoading: {dreams: false}});
-                console.log('Dane pobrane z API ():', this.state.userDreams);
+               // console.log('Dane pobrane z API ():', this.state.userDreams);
             })
             .catch(error => {
                 console.error('Error fetching user dreams:', error);
@@ -93,7 +99,7 @@ class Home extends React.Component {
                 const fetchData = response.data;
                 this.setState({userFriendDreams: fetchData})
                 this.setState({isLoading: {friendsDreams: false}});
-                console.log('Dane pobrane z API friends/dreams:', this.state.userFriendDreams);
+                //console.log('Dane pobrane z API friends/dreams:', this.state.userFriendDreams);
             })
             .catch(error => {
                 console.error('Error fetching user friends:', error);
@@ -207,7 +213,8 @@ class Home extends React.Component {
                             </div>
                             <button type="button" className="cancel-btn" onClick={() => {
                                 window.location.href = '/home'
-                            }}>Cancel</button>
+                            }}>Cancel
+                            </button>
                             <button type="submit" className="submit">Add Dream</button>
                         </div>
                     </form>
@@ -215,7 +222,7 @@ class Home extends React.Component {
                 {
                     this.state.isLoading.dreams &&
                     <div>
-                        <p>Loading dreams...</p>
+                        <p></p>
                     </div>
                 }
                 {
@@ -255,7 +262,13 @@ class Home extends React.Component {
                         </div>
                     </div>
                 </div>
-                {userFriendDreams.length > 0 ? (
+                {
+                    (this.state.isLoading.friendsDreams || []).length > 0 &&
+                    <div>
+                        <p></p>
+                    </div>
+                }
+                {userFriendDreams.length > 0 && !this.state.isLoading.friendsDreams ? (
                     userFriendDreams.map(dream => (
                         <FriendDreamItem key={dream.id} dream={dream}/>
                     ))
@@ -264,10 +277,12 @@ class Home extends React.Component {
                         <Message message="Add more friends to see their dreams"/>
                     </div>
                 )}
+
+
                 <button className="floating-button" onClick={() => {
                     window.location.href = '/add_dream'
-                }}>Add dream
-                </button>
+                }}>Add dream</button>
+
             </div>
         );
 

@@ -38,6 +38,7 @@ class DreamApiController extends AbstractController
         foreach ($dreams as $dream) {
             $dreamsData[] = [
                 'ownerName' => $dream->getOwner()->getDetail()->getName(),
+                'ownerId'=> $dream->getOwner()->getId(),
                 'id' => $dream->getId(),
                 'title' => $dream->getTitle(),
                 'content' => $dream->getDreamContent(),
@@ -72,6 +73,11 @@ class DreamApiController extends AbstractController
         $emotionRepository = $entityManager->getRepository('App\Entity\Emotion');
         $emotion = $emotionRepository->findOneBy(['emotion_name' => $data['emotion']]);
         $dream->setEmotion($emotion);
+
+        $statisticsRepository = $entityManager->getRepository('App\Entity\UserStatistic');
+        $statistics = $statisticsRepository->findOneBy(['id' => $user->getUserStatistics()->getId()]);
+        $statistics->setDreamsAmount($statistics->getDreamsAmount() + 1);
+        $entityManager->persist($statistics);
 
         $entityManager->persist($dream);
         $entityManager->flush();

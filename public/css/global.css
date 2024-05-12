@@ -118,7 +118,7 @@ form > #logoutButton i {
     color: black;
     position: static;
     margin: 0;
-   /* height: -webkit-fill-available*/;
+    height: -webkit-fill-available;
 }
 
 .navbar form {

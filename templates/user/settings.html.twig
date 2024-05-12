@@ -1,97 +1,21 @@
 {% extends 'base.html.twig' %}
-
 {% block stylesheets %}
     {{ parent() }}
     <link href="{{ asset('css/user_profile.css') }}" rel="stylesheet" >
 {% endblock %}
 
 {% block content %}
-    <div class="one-panel">
-        <div class="top">
-            <div class="profile-photo">
-                <img src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1" alt="User Photo">
-            </div>
-            <div class="name">
-                {{ userName }}
-                {{ userSurname }}
-            </div>
-            <div class="statistics">
-                <p>
-                    <i class="fa-solid fa-heart"></i>
-                    {#{{ stats->getLikesAmount  }}#} 10
-                </p>
-                <p> {# {{ if ($stats->getDreamsAmount() > 1):
-                     $stats->getDreamsAmount()  dreams
-                    else:
-                     $stats->getDreamsAmount()  dream
-                    endif; }}#}
-                    10 dreams
-                </p>
 
-            </div>
-        </div>
-        <div class="other">
-            <div>
-                <p><i class="fa-solid fa-user"></i>
-                    Profile info</p>
-                <div class="profile-info hidden">
-                    <p>Name: {{ userName }}</p>
-                    <p>Surname: {{ userSurname }}</p>
-                    <p>Email: {{ userEmail }}</p>
-
-                </div>
-            </div>
-            <div>
-                <p><i class="fa-solid fa-camera"></i>
-                    Change password</p>
-            </div>
-            <div>
-                <p><i class="fa-solid fa-square-poll-vertical"></i>
-                    Statistics</p>
-                <div class="statistics-info hidden">
-                    <p>You added
-                        {#<?php if ($stats->getDreamsAmount() > 1): ?>
-                        <?= $stats->getDreamsAmount() ?> dreams.
-                        <?php else: ?>
-                        <?= $stats->getDreamsAmount() ?> dream.
-                        <?php endif; ?>#}
-                    </p>
-                    <p>You liked
-                        {#<?php if ($stats->getLikeAmount() > 1): ?>
-                        <?= $stats->getLikeAmount() ?>
-                        dreams.
-                        <?php else: ?>
-                        <?= $stats->getLikeAmount() ?>
-                        dream.
-                        <?php endif; ?>#}
-                    </p>
-                    <p>You commented
-                       {# <?php if ($stats->getCommentAmount() > 1): ?>
-                        <?= $stats->getCommentAmount() ?>
-                        dreams.
-                        <?php else: ?>
-                        <?= $stats->getCommentAmount() ?>
-                        dream.
-                        <?php endif; ?>#}
-                    </p>
-                </div>
-            </div>
-
-            <div>
-                <form action="/logout" method="post">
-                    <button type="submit" id="logoutButton">
-                        <p><i class="fa-solid fa-right-from-bracket" style="color: #a6a2da;"></i>
-                            Log out </p>
-                    </button>
-                </form>
-            </div>
-        </div>
+    <div id="root">
     </div>
-    <img class="sleep" src="{{ asset('img/sleep.svg') }}">
-    </div>
+    <img class="sleep" src="{{ asset('img/sleep.svg')}}" alt="sleep-img">
 {% endblock %}
 
 {% block title %}
-User profile
+    Settings
 {% endblock %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/user.js') }}"></script>
+    {{ encore_entry_script_tags('user') }}
+{% endblock %}

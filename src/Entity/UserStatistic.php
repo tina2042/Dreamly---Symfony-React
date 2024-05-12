@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserStatisticsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserStatisticsRepository::class)]
 #[ApiResource]
@@ -16,12 +17,15 @@ class UserStatistic
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $dreams_amount = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $like_amount = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $comments_amount = null;
     public function __construct(){
         $this->dreams_amount = 0;

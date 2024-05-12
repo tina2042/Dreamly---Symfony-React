@@ -2,28 +2,28 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {createRoot} from "react-dom/client";
 
-
-function UserProfile({user_id}) {
+function AdminProfile({user_id}) {
     const [userData, setUserData] = useState(null);
+    const [dreams, setDreams] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
+    const [userId, setUserId] = useState(undefined);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
 
         // Fetch data for the current user
-        /*axios.get(`/api/user_detail`, {
+        axios.get(`/api/dreams`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         })
             .then(response => {
-                setUserData(response.data);
-                console.log(userData);
+                setDreams(response.data);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
-            });*/
+            });
 
         // Fetch data for all users
         axios.get('/api/users', {
@@ -33,13 +33,56 @@ function UserProfile({user_id}) {
             }
         })
             .then(response => {
-                setAllUsers(response.data);
-                console.log(allUsers);
+                setAllUsers(response.data['hydra:member']);
             })
             .catch(error => {
                 console.error('Error fetching all users data:', error);
             });
-    });
+    }, []);
+
+    useEffect(()=>{
+        if(dreams.length) setUserId(dreams[0].ownerId)
+    }, [dreams])
+
+    useEffect(()=>{
+        if(userId){
+            const token = localStorage.getItem('jwt');
+            axios.get(`/api/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    setUserData(response.data);
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        }
+    },[userId])
+
+    const handleDeleteUser = (userId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+        if (confirmDelete) {
+            const token = localStorage.getItem('jwt');
+            axios.delete(`/api/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    // Refresh the user list after deletion
+                    const updatedUsers = allUsers.filter(user => user.id !== userId);
+                    setAllUsers(updatedUsers);
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                });
+        }
+    };
 
     return (
 
@@ -48,18 +91,19 @@ function UserProfile({user_id}) {
             <div className="user_settings">
                 <div className="top">
                     <div className="profile-photo">
-                        <img src={userData.photo} alt="User Photo" />
+                        <img src={userData.detail.photo} alt="User Photo" />
                     </div>
                     <div className="name">
-                        {userData.name} {userData.surname}
+                        {userData.detail.name} {userData.detail.surname}
                     </div>
                     <div className="statistics">
                         <p>
                             <i className="fa-solid fa-heart"></i>
-                            {userData.stats.likeAmount}
+                            {userData.userStatistics.like_amount}
                         </p>
                         <p>
-                            {userData.stats.dreamsAmount} {userData.stats.dreamsAmount > 1 ? 'dreams' : 'dream'}
+                            {userData.userStatistics.dreams_amount}
+                            {userData.userStatistics.dreams_amount > 1 ? ' dreams' : ' dream'}
                         </p>
                     </div>
                 </div>
@@ -68,8 +112,8 @@ function UserProfile({user_id}) {
                     <div>
                         <p><i className="fa-solid fa-user"></i> Profile info</p>
                         <div className="profile-info hidden">
-                            <p>Name: {userData.name}</p>
-                            <p>Surname: {userData.surname}</p>
+                            <p>Name: {userData.detail.name}</p>
+                            <p>Surname: {userData.detail.surname}</p>
                             <p>Email: {userData.email}</p>
                         </div>
                     </div>
@@ -98,12 +142,17 @@ function UserProfile({user_id}) {
         <div className="admin-panel">
             {allUsers.map(user => (
                 <div className="session-info user-info" key={user.id}>
-                    <img src={user.photo} alt="User" />
+                    <img src={user.detail.photo} alt="User" />
                     <div className="session-details">
-                        <p className="dark">{user.name} {user.surname}</p>
+                        <p className="dark">{user.detail.name} {user.detail.surname}</p>
                         <p className="dark email">{user.email}</p>
                     </div>
-                    <button type="button" className="small-btn" data-email={user.email}>Delete User</button>
+                    <button
+                        type="button"
+                        className="small-btn"
+                        onClick={() => handleDeleteUser(user.id)}
+                    >Delete User
+                    </button>
                 </div>
             ))}
         </div>
@@ -111,4 +160,4 @@ function UserProfile({user_id}) {
     );
 }
 
-createRoot(document.getElementById('root')).render(<UserProfile/>);
+createRoot(document.getElementById('root')).render(<AdminProfile/>);
