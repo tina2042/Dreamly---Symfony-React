@@ -4,7 +4,6 @@ import {createRoot} from "react-dom/client";
 
 function AdminProfile({user_id}) {
     const [userData, setUserData] = useState(null);
-    const [dreams, setDreams] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
     const [userId, setUserId] = useState(undefined);
 
@@ -12,14 +11,14 @@ function AdminProfile({user_id}) {
         const token = localStorage.getItem('jwt');
 
         // Fetch data for the current user
-        axios.get(`/api/dreams`, {
+        axios.get(`/api/user_id`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         })
             .then(response => {
-                setDreams(response.data);
+                setUserId(response.data);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
@@ -40,9 +39,6 @@ function AdminProfile({user_id}) {
             });
     }, []);
 
-    useEffect(()=>{
-        if(dreams.length) setUserId(dreams[0].ownerId)
-    }, [dreams])
 
     useEffect(()=>{
         if(userId){

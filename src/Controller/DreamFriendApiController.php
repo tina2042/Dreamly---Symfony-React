@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Friend;
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,17 +26,13 @@ class DreamFriendApiController extends AbstractController
     public function view_friend_dreams(Request $request, EntityManagerInterface $entityManager): Response
     {
         $userIdentifier = $this->getUser()->getId();
-        $userRepository = $entityManager->getRepository(User::class);
-        /*$user = $userRepository->find($userIdentifier);*/
 
         $friendsRepository = $entityManager->getRepository(Friend::class);
-        $friendIds = $friendsRepository->findBy(['user_1' => $userIdentifier]);
         $friends=[];
-        //zmienić to
-        foreach ($friendIds as $friendId){
-            $friends[] = $userRepository->find($friendId);
+        $friendIds = $friendsRepository->findBy(['user_1' => $userIdentifier]);
+        foreach ($friendIds as $friend) {
+            $friends[] = $friend->getUser2();
         }
-
 
         if($friends==null){
             return $this->json([
