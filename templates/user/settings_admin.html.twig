@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <div id="root">
+    </div>
+    <img class="sleep" src="{{ asset('img/sleep.svg')}}" alt="sleep-img">
+{% endblock %}
+
+{% block title %}
+Settings admin
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/admin.js') }}"></script>
+    {{ encore_entry_script_tags('admin') }}
+{% endblock %}
+

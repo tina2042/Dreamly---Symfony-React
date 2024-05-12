@@ -7,8 +7,13 @@
     <link href="{{ asset('css/my_dreams.css') }}" rel="stylesheet" >
 {% endblock %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/dreams_list.js') }}"></script>
+    {{ encore_entry_script_tags('dreams_list') }}
+{% endblock %}
+
 {% block content %}
-    <div class="dream-list">
+    {#<div class="dream-list">
         {% for dream in dreams %}
             <div class="dream-tile">
                 <h2 class="dream-title">{{ dream }}</h2>
@@ -16,6 +21,8 @@
                 <span class="dream-date">{{ dream }}</span>
             </div>
         {% endfor %}
+    </div>#}
+    <div id="root">
     </div>
 
 {% endblock %}

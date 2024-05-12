@@ -7,11 +7,6 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import '../styles/app.css';
-/*import React from 'react';*/
-import ReactDOM from 'react-dom';
-/*import axios from 'axios';*/
-
-import Items from './Components/Dreams';
 import React from 'react';
 import axios from 'axios';
 

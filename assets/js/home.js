@@ -7,8 +7,6 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import '../styles/app.css';
-/*import React from 'react';*/
-/*import axios from 'axios';*/
 import React from 'react';
 import axios from 'axios';
 import {createRoot} from 'react-dom/client';
@@ -23,7 +21,11 @@ class Home extends React.Component {
             emotion: 'HAPPY',
             privacy: 'PUBLIC', // Default value
             userDreams: [],
-            userFriendDreams: []
+            userFriendDreams: [],
+            isLoading: {
+                dreams: true,
+                fiendsDreams: true,
+            },
         };
 
     }
@@ -65,6 +67,7 @@ class Home extends React.Component {
     async componentDidMount() {
 
         const token = localStorage.getItem('jwt');
+        console.log(token);
         await axios.get('/api/dreams', {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -74,6 +77,7 @@ class Home extends React.Component {
             .then(response => {
                 const fetchData = response.data;
                 this.setState({userDreams: fetchData})
+                this.setState({isLoading: {dreams: false}});
                 console.log('Dane pobrane z API ():', this.state.userDreams);
             })
             .catch(error => {
@@ -88,6 +92,7 @@ class Home extends React.Component {
             .then(response => {
                 const fetchData = response.data;
                 this.setState({userFriendDreams: fetchData})
+                this.setState({isLoading: {friendsDreams: false}});
                 console.log('Dane pobrane z API friends/dreams:', this.state.userFriendDreams);
             })
             .catch(error => {
@@ -100,7 +105,6 @@ class Home extends React.Component {
         const {userDreams, userFriendDreams} = this.state;
         const UserDreamItem = ({dream}) => {
             const formattedDate = new Date(dream.date).toLocaleDateString('de-DE');
-
             return (
                 <div>
                     <div className="my-dream-top">
@@ -203,29 +207,39 @@ class Home extends React.Component {
                             </div>
                             <button type="button" className="cancel-btn" onClick={() => {
                                 window.location.href = '/home'
-                            }}>Cancel
-                            </button>
+                            }}>Cancel</button>
                             <button type="submit" className="submit">Add Dream</button>
                         </div>
                     </form>
                 </div>
-                {latestDream != null ? (
-
-                    <UserDreamItem dream={latestDream} />
-                ) : (
+                {
+                    this.state.isLoading.dreams &&
                     <div>
-                        <div className="my-dream-top">
-                            <h3 className="block-name">My last dream</h3>
-                            <button type="button" className="dream-list-btn" onClick={() => {
-                                window.location.href = '/dreams_list'
-                            }}>View all my dreams
-                            </button>
-                        </div>
-                        <div className="my-dream">
-                            <Message message="No dreams added" divName="my-dream"/>
-                        </div>
+                        <p>Loading dreams...</p>
                     </div>
-                )}
+                }
+                {
+                    !this.state.isLoading.dreams &&
+                    (
+                        latestDream != null ? (
+
+                            <UserDreamItem dream={latestDream} />
+                        ) : (
+                            <div>
+                                <div className="my-dream-top">
+                                    <h3 className="block-name">My last dream</h3>
+                                    <button type="button" className="dream-list-btn" onClick={() => {
+                                        window.location.href = '/dreams_list'
+                                    }}>View all my dreams
+                                    </button>
+                                </div>
+                                <div className="my-dream">
+                                    <Message message="No dreams added" divName="my-dream"/>
+                                </div>
+                            </div>
+                        )
+                    )
+                }
 
                 <div className="friend-find">
                     <h3 className="block-name">Friends dreams</h3>

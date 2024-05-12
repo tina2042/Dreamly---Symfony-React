@@ -28,11 +28,12 @@ class DreamFriendApiController extends AbstractController
     {
         $userIdentifier = $this->getUser()->getId();
         $userRepository = $entityManager->getRepository(User::class);
-        $user = $userRepository->find($userIdentifier);
-        $userId=$user->getId();
+        /*$user = $userRepository->find($userIdentifier);*/
+
         $friendsRepository = $entityManager->getRepository(Friend::class);
-        $friendIds = $friendsRepository->findBy(['user_1' => $userId]);
+        $friendIds = $friendsRepository->findBy(['user_1' => $userIdentifier]);
         $friends=[];
+        //zmienić to
         foreach ($friendIds as $friendId){
             $friends[] = $userRepository->find($friendId);
         }
