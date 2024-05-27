@@ -47,6 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[GetCollection(
     uriTemplate: '/user_id',
     controller: UserApiController::class,
+    description: "Returns current user id",
     normalizationContext: [
         'groups' => ['user:read']
     ], denormalizationContext: [

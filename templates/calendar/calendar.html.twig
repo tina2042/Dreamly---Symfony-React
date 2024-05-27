@@ -1,7 +1,16 @@
 {% extends 'base.html.twig' %}
-
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/calendar.css') }}" rel="stylesheet" >
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('build/calendar.js') }}"></script>
+    {{ encore_entry_script_tags('calendar') }}
+{% endblock %}
 {% block content %}
-<p>Calendar view will be in React technology, please wait for update :) </p>
+    <div id="root">
+
+    </div>
 {% endblock %}
 
 {% block title %}

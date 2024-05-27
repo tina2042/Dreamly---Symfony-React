@@ -27,6 +27,7 @@ Encore
     .addEntry('view_dream', './assets/js/view_dream.js')
     .addEntry('admin','./assets/js/admin.js')
     .addEntry('user','./assets/js/user.js')
+    .addEntry('calendar', './assets/js/calendar.js')
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
 

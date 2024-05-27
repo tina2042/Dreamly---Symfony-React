@@ -24,7 +24,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new Get(),
-        //new GetCollection(),
     ],
     normalizationContext: [
         'groups' => ['dream:read']
@@ -36,6 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[GetCollection(
     uriTemplate: '/dreams',
     controller: DreamApiController::class,
+    description: 'Get dreams of user',
     normalizationContext: [
         'groups' => ['dream:read']
     ]
@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[GetCollection(
     uriTemplate: '/friends/dreams',
     controller: DreamFriendApiController::class,
+    description: 'Get dreams of user friends',
     normalizationContext: [
         'groups' => ['dream:read']
     ]
@@ -51,9 +52,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Post(
     uriTemplate: '/api/add_dream',
     controller: DreamApiController::class,
+    description: 'Add a dream',
     denormalizationContext: [
         'groups' => ['dream:write']
-    ])]
+    ]
+)]
 #[Delete(
     uriTemplate: '/api/remove_dream/{dream_id}',
     uriVariables: [
@@ -61,20 +64,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             fromClass: Dream::class
         )
     ],
-    controller: DreamApiController::class
-)]
-#[ApiResource(
-    uriTemplate: '/users/{user_id}/dreams',
-    operations: [new GetCollection()],
-    uriVariables: [
-        'user_id' => new Link(
-            fromProperty: 'dreams',
-            fromClass: User::class
-        )
-    ],
-    normalizationContext: [
-        'groups' => 'user:read'
-    ]
+    controller: DreamApiController::class,
+    description: "Remove a dream with dream_id"
+
 )]
 
 #[UniqueEntity(fields: ['id'], message: "There is already a dream with this id")]
