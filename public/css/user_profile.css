@@ -18,7 +18,9 @@ body {
     justify-content: unset;
 
 }
-
+p > i{
+    margin-right: 0.5em;
+}
 img {
     margin-top: -5vh;
     width: 20vh;
@@ -88,14 +90,13 @@ img {
     flex-direction: column;
     color: #a6a2da;
     padding: 0 1em;
-    max-height: 0;
+
     overflow: hidden;
     transition: max-height 0.3s ease; /* Add transition for smooth animation */
 }
 
 .hidden {
     max-height: 0 !important;
-
 }
 
 .one-panel {

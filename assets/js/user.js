@@ -4,7 +4,8 @@ import {createRoot} from "react-dom/client";
 
 function UserProfile({user_id}) {
     const [userData, setUserData] = useState(null);
-
+    const [showInfo, setShowInfo] = useState(false)
+    const [showStat, setShowStat] = useState(false)
     const [userId, setUserId] = useState(undefined);
 
     useEffect(() => {
@@ -47,6 +48,22 @@ function UserProfile({user_id}) {
     },[userId])
 
 
+    function showProfileInfo() {
+        if(showInfo){
+            setShowInfo(false)
+        }else{
+            setShowInfo(true)
+        }
+    }
+
+    function showStatistics() {
+        if(showStat){
+            setShowStat(false)
+        }else{
+            setShowStat(true)
+        }
+    }
+
     return (
 
         <div className="one-panel">
@@ -72,9 +89,9 @@ function UserProfile({user_id}) {
                     </div>
                     <div className="other">
                         {/* Profile info */}
-                        <div>
-                            <p><i className="fa-solid fa-user"></i> Profile info</p>
-                            <div className="profile-info hidden">
+                        <div onClick={() => showProfileInfo()}>
+                            <p><i className="fa-solid fa-user" ></i> Profile info</p>
+                            <div className={`profile-info ${showInfo ? '' : 'hidden'}`} >
                                 <p>Name: {userData.detail.name}</p>
                                 <p>Surname: {userData.detail.surname}</p>
                                 <p>Email: {userData.email}</p>
@@ -85,10 +102,12 @@ function UserProfile({user_id}) {
                             <p><i className="fa-solid fa-camera"></i> Change photo</p>
                         </div>
                         {/* Statistics */}
-                        <div>
+                        <div onClick={()=> showStatistics()}>
                             <p><i className="fa-solid fa-square-poll-vertical"></i> Statistics</p>
-                            <div className="statistics-info hidden">
-                                {/* Statistics info */}
+                            <div className={`statistics-info ${showStat ? '' : 'hidden'}`}>
+                                <p>You added {userData.userStatistics.dreams_amount} {userData.userStatistics.dreams_amount>1 ? 'dreams' : 'dream'}</p>
+                                <p>You liked {userData.userStatistics.like_amount} {userData.userStatistics.like_amount>1 ? 'dreams' : 'dream'}</p>
+                                <p>You commented {userData.userStatistics.comments_amount} {userData.userStatistics.comments_amount>1 ? 'dreams' : 'dream'}</p>
                             </div>
                         </div>
                         {/* Logout */}
