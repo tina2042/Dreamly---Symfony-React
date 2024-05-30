@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
@@ -17,23 +18,29 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: LikesRepository::class)]
 #[ApiResource(
     operations:[
-        new Get(),
-        new GetCollection()
+        new Get(
+            normalizationContext: [ 'groups' => ['like:read'] ],
+            denormalizationContext: [ 'groups' => ['like:write'] ]
+        ),
+        new GetCollection(
+            normalizationContext: [ 'groups' => ['like:read'] ],
+            denormalizationContext: [ 'groups' => ['like:write'] ]
+        ),
+        new Delete()
     ],
     normalizationContext: [ 'groups' => ['like:read'] ],
     denormalizationContext: [ 'groups' => ['like:write'] ]
 )]
 #[Post(
-    uriTemplate: '/{dream_id}/add_like',
-    uriVariables: [
-        'dream_id' => new Link(
-            fromClass: Dream::class
-        )
-    ],
+    uriTemplate: '/add_like',
     controller: LikeApiController::class,
+    normalizationContext: [
+        'groups' => ['like:read']
+    ],
     denormalizationContext: [
         'groups' => ['like:write']
-])]
+    ]
+)]
 class UserLike
 {
     #[ORM\Id]

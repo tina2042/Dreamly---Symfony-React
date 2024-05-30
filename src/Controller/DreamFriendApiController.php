@@ -56,7 +56,7 @@ class DreamFriendApiController extends AbstractController
         foreach ($friendDreams as $dream) {
             $dreamsData[] = [
                 'ownerName' => $dream->getOwner()->getDetail()->getName(),
-                //'id' => $dream->getId(),
+                'id' => $dream->getId(),
                 'title' => $dream->getTitle(),
                 'content' => $dream->getDreamContent(),
                 //'privacy' => $dream->getPrivacy()->getPrivacyName(),

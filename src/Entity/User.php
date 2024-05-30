@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Controller\DreamFriendApiController;
+use App\Controller\FriendApiController;
 use App\Controller\UserApiController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -54,6 +55,17 @@ use Symfony\Component\Validator\Constraints as Assert;
         'groups' => ['user:write']
     ]
 )]
+#[POST(
+    uriTemplate: '/search',
+    controller: UserApiController::class,
+    description: "Returns users by search",
+    normalizationContext: [
+        'groups' => ['user:read']
+    ], denormalizationContext: [
+        'groups' => ['user:write']
+    ]
+)]
+
 #[UniqueEntity(fields: ['email'], message: "There is already an account with this email")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

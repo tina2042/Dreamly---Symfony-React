@@ -37,7 +37,28 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+    /**
+     * Znajdź użytkowników po imieniu i nazwisku.
+     *
+     * @param string $query
+     * @return User[]|array
+     */
+    public function findByFirstNameAndLastName(string $query): array
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
 
+        return $queryBuilder
+            ->select('u', 'ud')
+            ->join('u.detail', 'ud')
+//            ->where(
+//                $queryBuilder->expr()->like('LOWER(ud.name)', 'LOWER(:query)') . ' OR ' .
+//                $queryBuilder->expr()->like('LOWER(ud.surname)', 'LOWER(:query)')
+//            )
+            ->andWhere("LOWER(ud.name) LIKE LOWER(:query) OR LOWER(ud.surname) LIKE LOWER(:query)")
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

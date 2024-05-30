@@ -1,12 +1,3 @@
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
-
-// any CSS you import will output into a single css file (app.css in this case)
-import '../styles/app.css';
 import React from 'react';
 import axios from 'axios';
 import {createRoot} from 'react-dom/client';
@@ -24,10 +15,16 @@ class Home extends React.Component {
             userFriendDreams: [],
             isLoading: {
                 dreams: true,
-                fiendsDreams: true,
+                friendsDreams: true,
+                userLikes: true
             },
+            searchQuery: '',
+            searchResults: [],
+            isSearching: false,
+            isFocused: false, // New state for tracking focus
+            userLikes: [], // New state for user likes,
+            didUserLikedThis:  {}
         };
-
     }
 
     handleChange = (e) => {
@@ -41,7 +38,6 @@ class Home extends React.Component {
 
         const {title, content, emotion, privacy} = this.state;
         const token = localStorage.getItem('jwt');
-        //console.log(token);
         axios.post('/api/add_dream', {
             title,
             content,
@@ -54,9 +50,7 @@ class Home extends React.Component {
             }
         })
             .then(response => {
-                // Handle success, maybe redirect or update state
-                //console.log(response.data);
-                //message that dream has been added
+                alert('Dream has been added');
                 this.setState({
                     title: '',
                     content: '',
@@ -65,52 +59,249 @@ class Home extends React.Component {
                 });
             })
             .catch(error => {
-                // Handle error
                 console.error('Error adding dream:', error);
             });
     }
 
     async componentDidMount() {
-
         const token = localStorage.getItem('jwt');
 
         await axios.get('/api/dreams', {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/ld+json'
             }
         })
             .then(response => {
                 const fetchData = response.data;
-                this.setState({userDreams: fetchData})
-                this.setState({isLoading: {dreams: false}});
-               // console.log('Dane pobrane z API ():', this.state.userDreams);
+
+                this.setState({userDreams: fetchData, isLoading: {...this.state.isLoading, dreams: false}});
             })
             .catch(error => {
                 console.error('Error fetching user dreams:', error);
             });
+        await axios.get('/api/user_likes', {
+            headers:{
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/ld+json'
+            }
+        }).then(response => {
+            const fetchData = response.data;
+            this.setState({userLikes: fetchData, isLoading: {...this.state.isLoading, userLikes: false}});
+
+            // Process userLikes to create likes object
+            const didUserLikedThis = { ...this.state.didUserLikedThis }; // Create a copy of the current state
+            fetchData['hydra:member'].forEach(like => {
+                const dreamId = like.dream.split('/').pop(); // Extract the ID from the dream URL
+                const userId = like.owner.split('/').pop();
+                const likeId = like['@id'].split('/').pop();
+
+                if (Number(userId) === Number(this.state.userDreams[0].ownerId)) {
+                    // Initialize didUserLikedThis[dreamId] as an object if it's not already
+                    if (!didUserLikedThis[dreamId]) {
+                        didUserLikedThis[dreamId] = {};
+                    }
+
+                    didUserLikedThis[dreamId].liked = true; // Set true for liked dreams
+                    didUserLikedThis[dreamId].likeId = likeId;
+                }
+            });
+
+            this.setState({ didUserLikedThis: didUserLikedThis }); // Update the state with the new object
+
+
+
+        }).catch(error => {
+            console.error('Error fetching user likes:', error);
+        });
+
         await axios.get('/api/friends/dreams', {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/ld+json'
             }
         })
             .then(response => {
                 const fetchData = response.data;
-                this.setState({userFriendDreams: fetchData})
-                this.setState({isLoading: {friendsDreams: false}});
-                //console.log('Dane pobrane z API friends/dreams:', this.state.userFriendDreams);
+
+                this.setState({userFriendDreams: fetchData, isLoading: {...this.state.isLoading, friendsDreams: false}});
             })
             .catch(error => {
                 console.error('Error fetching user friends:', error);
             });
 
+
+    }
+
+    handleSearchChange = (e) => {
+        this.setState({searchQuery: e.target.value}, () => {
+            if (this.state.searchQuery.length >= 3) {
+                this.searchFriends();
+            } else {
+                this.setState({searchResults: [], isSearching: false});
+            }
+        });
+    }
+
+    handleLikeAdd = async (dream_id, isMyDream) => {
+
+        const token = localStorage.getItem('jwt');
+        let liked = false;
+        if(Object.keys(this.state.didUserLikedThis).includes(dream_id.toString())){
+            liked = this.state.didUserLikedThis[dream_id.toString()].liked; // Check if the dream is liked
+        }
+        if (liked) {
+            await this.handleUnlike(dream_id, isMyDream);
+        } else {
+            alert("Adding like...");
+            try {
+                const response = await axios.post('/api/add_like', { dream_id }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/ld+json'
+                    }
+                });
+                if (response.status === 200) {
+
+                    const likeId = response.data.likeId;
+                    console.log("Like added");
+                    // Update the local state to reflect the newly added like
+                    this.setState(prevState => ({
+                        didUserLikedThis: {
+                            ...prevState.didUserLikedThis,
+                            [dream_id]: {
+                                liked: true,
+                                likeId: likeId
+                            }
+                        }
+                    }));
+                    if (isMyDream) {
+                        let userDreams = [...this.state.userDreams];
+                        let latestDream = null;
+                        if (userDreams.length > 0) {
+                            latestDream = userDreams[userDreams.length - 1];
+                        }
+                        latestDream.likes = latestDream.likes + 1;
+                        userDreams[userDreams.length - 1] = latestDream;
+                        this.setState({userDreams: userDreams});
+                    } else {
+                        let userFriendsDreams = this.state.userFriendDreams;
+                        const likedDream = userFriendsDreams.find(dream => dream.id === dream_id);
+                        const likedDreamId = userFriendsDreams.findIndex(dream => dream.id === dream_id);
+                        likedDream.likes = likedDream.likes + 1;
+                        userFriendsDreams[likedDreamId] = likedDream;
+                        this.setState({userFriendsDreams:userFriendsDreams});
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding like:', error);
+            }
+        }
+    }
+
+    handleUnlike = async (dream_id, isMyDream) => {
+        const token = localStorage.getItem('jwt');
+        const likeId = this.state.didUserLikedThis[dream_id]?.likeId;
+        alert("Removing your like...");
+        try {
+            const response = await axios.delete(`/api/user_likes/${likeId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/ld+json'
+                }
+            });
+            if (response.status === 204) {
+                console.log("Like removed");
+                // Update the local state to reflect the removed like
+                const didUserLikedThis = { ...this.state.didUserLikedThis }; // Create a copy of the current state
+                if (!didUserLikedThis[dream_id]) {
+                    didUserLikedThis[dream_id] = {};
+                }
+
+                didUserLikedThis[dream_id].liked = false; // Set false for unliked dreams
+                didUserLikedThis[dream_id].likeId = null;
+                this.setState({ didUserLikedThis }); // Update the state with the new object
+                if (isMyDream) {
+                    let userDreams = [...this.state.userDreams];
+                    let latestDream = null;
+                    if (userDreams.length > 0) {
+                        latestDream = userDreams[userDreams.length - 1];
+                    }
+                    latestDream.likes = latestDream.likes - 1;
+                    userDreams[userDreams.length - 1] = latestDream;
+                    this.setState({userDreams: userDreams});
+                } else {
+                    let userFriendsDreams = this.state.userFriendDreams;
+                    const likedDream = userFriendsDreams.find(dream => dream.id === dream_id);
+                    const likedDreamId = userFriendsDreams.findIndex(dream => dream.id === dream_id);
+                    likedDream.likes = likedDream.likes - 1;
+                    userFriendsDreams[likedDreamId] = likedDream;
+                    this.setState({userFriendsDreams:userFriendsDreams});
+                }
+            }
+        } catch (error) {
+            console.error('Error removing like:', error);
+        }
+
+    }
+
+
+    handleComment = async  (commentText, dreamId, isMyDream)=> {
+        console.log("Comment added");
+    }
+
+    searchFriends = async () => {
+        const { searchQuery } = this.state;
+        this.setState({ isSearching: true });
+
+        const token = localStorage.getItem('jwt');
+
+        try {
+            const response = await axios.post('/api/search', { query: searchQuery }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/ld+json'
+                }
+            });
+            this.setState({ searchResults: response.data, isSearching: false });
+
+        } catch (error) {
+            console.error('Error searching friends:', error);
+            this.setState({ isSearching: false });
+        }
+    }
+
+    addFriend = async (user_id) => {
+        const token = localStorage.getItem('jwt');
+        if(confirm("Are you sure you want to add this friend?")){
+            console.log("Trying to add friend");
+            try {
+                const response = await axios.post('/api/friends/add', { user_id }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/ld+json'
+                    }
+                });
+                if (response.status === 200) {
+                    alert("Friend added");
+                    this.setState({ searchQuery: '', searchResults: [] });
+                }
+            } catch (error) {
+                console.error('Error adding friend:', error);
+            }
+        }
     }
 
     render() {
-        const {userDreams, userFriendDreams} = this.state;
+        const { userDreams, userFriendDreams, searchResults, searchQuery, isSearching } = this.state;
         const UserDreamItem = ({dream}) => {
             const formattedDate = new Date(dream.date).toLocaleDateString('de-DE');
+            const { didUserLikedThis } = this.state;
+            let liked = false;
+            if(Object.keys(didUserLikedThis).includes(dream.id.toString())){
+                liked = didUserLikedThis[dream.id.toString()].liked; // Check if the dream is liked
+
+            }
             return (
                 <div>
                     <div className="my-dream-top">
@@ -120,20 +311,58 @@ class Home extends React.Component {
                         }}>View all my dreams
                         </button>
                     </div>
-                    <div className="my-dream" onClick={() => {
-                        window.location.href = `/dreams/${dream.id}`
-                    }}>
-                        <div className="top">
+                    <div className="my-dream" >
+                        <div className="top" onClick={() => {
+                            window.location.href = `/dreams/${dream.id}`
+                        }}>
                             <h4>{dream.title}</h4>
                             <data>{formattedDate}</data>
                         </div>
                         <p>{dream.content}</p>
                         <div className="social-icons">
-                            <div className="likes">
-                                <i className="fa-solid fa-heart fa-xl like"></i>
+                            <div className="likes" onClick={() => this.handleLikeAdd(dream.id, true)}>
+                                <i className={`fa-solid fa-heart fa-xl ${liked ? 'liked' : 'unliked-my'}`}></i> {/* Add 'liked' class if liked */}
                                 <p className="like-amount">{dream.likes}</p>
                             </div>
-                            <div className="comment_icon">
+                            <div className="comment_icon" onClick={() => this.handleComment("some text", dream.id, true)}>
+                                <i className="fa-solid fa-comment fa-xl"></i>
+                                <p>{dream.commentsAmount}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+                ;
+        };
+        const Message = ({message}) => (
+            <div className="top">
+                <h4>{message}</h4>
+            </div>
+        );
+
+        const FriendDreamItem = ({dream}) => {
+            const  didUserLikedThis  = this.state.didUserLikedThis;
+            let liked = false;
+            if(Object.keys(didUserLikedThis).includes(dream.id.toString())){
+                liked = didUserLikedThis[dream.id.toString()].liked; // Check if the dream is liked
+            }
+            return (
+                <div key={dream.id} className="friend-dream">
+                    <div className="top">
+                        <img alt="dream" src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
+                        <p>{dream.ownerName}</p>
+                        <h4>{dream.title}</h4>
+                        <data>{dream.date}</data>
+                    </div>
+                    <div className="bottom">
+                        <p>{dream.content}</p>
+                        <div className="social-icons">
+                            <div className="likes" onClick={() => this.handleLikeAdd(dream.id, false)}>
+                                <i className={`fa-solid fa-heart fa-xl ${liked ? 'liked' : ''}`}></i> {/* Add 'liked' class if liked */}
+                                <p className="like-amount">{dream.likes}</p>
+                            </div>
+                            <div className="comment_icon"
+                                 onClick={() => this.handleComment("some text", dream.id, false)}>
                                 <i className="fa-solid fa-comment fa-xl"></i>
                                 <p>{dream.commentsAmount}</p>
                             </div>
@@ -141,71 +370,51 @@ class Home extends React.Component {
                     </div>
                 </div>
             );
-        };
-        const Message = ({message}) => (
+        }
 
-                <div className="top">
-                    <h4>{message}</h4>
-                </div>
-
-        );
-
-        const FriendDreamItem = ({dream}) => {
+        const SearchResults = ({results, addFriend}) => {
             return (
-                    <div key={dream.id} className="friend-dream">
-                        <div className="top">
-                            <img alt="dream"
-                                 src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
-                            <p>{dream.ownerName}</p>
-                            <h4>{dream.title}</h4>
-                            <data>{dream.date}</data>
-                        </div>
-                        <div className="bottom">
-                            <p>{dream.content}</p>
-                            <div className="social-icons">
-                                <div className="likes">
-                                    <i className="fa-solid fa-heart fa-xl like"></i>
-                                    <p className="like-amount">{dream.likes}</p>
+                <ul id="search-results">
+                    {this.state.isFocused && !this.state.isSearching && results.length === 0 ? (
+                        <li>User not found</li>
+                    ) : (
+
+                        results.map(user => (
+                            <li key={user.id} onClick={() => addFriend(user.id)}>
+                                <div className="search-result-item">
+                                    <img src={user.photo} alt={user.name}/>
+                                    <span>{user.name} {user.surname}</span>
                                 </div>
-                                <div className="comment_icon">
-                                    <i className="fa-solid fa-comment fa-xl"></i>
-                                    <p>{dream.commentsAmount}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>)
+                            </li>
+                        ))
+                    )}
+                </ul>
+            );
         }
+
         let latestDream = null;
-        if(userDreams.length >0){
-            latestDream=null;
+        if (userDreams.length > 0) {
+            latestDream = userDreams[userDreams.length - 1];
         }
-        latestDream = userDreams[userDreams.length - 1];
+
         return (
             <div>
                 <div className="add-dream-form">
                     <form onSubmit={this.handleSubmit}>
-                        <input type="text" name="title" value={this.state.title} onChange={this.handleChange}
-                               placeholder="Enter title"/>
-                        <textarea name="content" value={this.state.content} onChange={this.handleChange}
-                                  placeholder="Write your dream here"></textarea>
+                        <input type="text" name="title" value={this.state.title} onChange={this.handleChange} placeholder="Enter title"/>
+                        <textarea name="content" value={this.state.content} onChange={this.handleChange} placeholder="Write your dream here"></textarea>
                         <div id="buttons">
                             <div className="emotion-picker">
-                                <input type="radio" id="HAPPY" name="emotion" value="HAPPY"
-                                       onChange={this.handleChange}/>
+                                <input type="radio" id="HAPPY" name="emotion" value="HAPPY" onChange={this.handleChange}/>
                                 <label htmlFor="HAPPY" className="emoji">😊</label>
-
-                                <input type="radio" id="NEUTRAL" name="emotion" value="NEUTRAL"
-                                       onChange={this.handleChange}/>
+                                <input type="radio" id="NEUTRAL" name="emotion" value="NEUTRAL" onChange={this.handleChange}/>
                                 <label htmlFor="NEUTRAL" className="emoji">😐</label>
-
-                                <input type="radio" id="SAD" name="emotion" value="SAD"
-                                       onChange={this.handleChange}/>
+                                <input type="radio" id="SAD" name="emotion" value="SAD" onChange={this.handleChange}/>
                                 <label htmlFor="SAD" className="emoji">😢</label>
                             </div>
                             <div className="dropdown-list">
                                 <label htmlFor="privacy">
-                                    <select name="privacy" id="privacy" value={this.state.privacy}
-                                            onChange={this.handleChange}>
+                                    <select name="privacy" id="privacy" value={this.state.privacy} onChange={this.handleChange}>
                                         <option value="PUBLIC">Public</option>
                                         <option value="PRIVATE">Private</option>
                                     </select>
@@ -213,61 +422,60 @@ class Home extends React.Component {
                             </div>
                             <button type="button" className="cancel-btn" onClick={() => {
                                 window.location.href = '/home'
-                            }}>Cancel
-                            </button>
+                            }}>Cancel</button>
                             <button type="submit" className="submit">Add Dream</button>
                         </div>
                     </form>
                 </div>
-                {
-                    this.state.isLoading.dreams &&
+                {this.state.isLoading.dreams ? (
                     <div>
-                        <p></p>
+                        <div className="my-dream-top">
+                            <h3 className="block-name">My last dream</h3>
+                            <button type="button" className="dream-list-btn" onClick={() => {
+                                window.location.href = '/dreams_list'
+                            }}>View all my dreams
+                            </button>
+                        </div>
+                        <div className="my-dream">
+                            <Message message="Loading your dreams..." divName="my-dream"/>
+                        </div>
                     </div>
-                }
-                {
-                    !this.state.isLoading.dreams &&
-                    (
-                        latestDream != null ? (
-
-                            <UserDreamItem dream={latestDream} />
-                        ) : (
-                            <div>
-                                <div className="my-dream-top">
-                                    <h3 className="block-name">My last dream</h3>
-                                    <button type="button" className="dream-list-btn" onClick={() => {
-                                        window.location.href = '/dreams_list'
-                                    }}>View all my dreams
-                                    </button>
-                                </div>
-                                <div className="my-dream">
-                                    <Message message="No dreams added" divName="my-dream"/>
-                                </div>
+                ) : (
+                    latestDream != null ? (
+                        <UserDreamItem dream={latestDream}/>
+                    ) : (
+                        <div>
+                            <div className="my-dream-top">
+                                <h3 className="block-name">My last dream</h3>
+                                <button type="button" className="dream-list-btn" onClick={() => {
+                                    window.location.href = '/dreams_list'
+                                }}>View all my dreams
+                                </button>
                             </div>
-                        )
+                            <div className="my-dream">
+                                <Message message="No dreams added" divName="my-dream"/>
+                            </div>
+                        </div>
                     )
-                }
+                )}
 
                 <div className="friend-find">
                     <h3 className="block-name">Friends dreams</h3>
                     <div className="wrap">
                         <div className="search">
                             <div>
-                                <input type="text" className="searchTerm" placeholder="Find more friends"/>
-                                <button type="submit" className="searchButton">
+
+                                <input type="text" className="searchTerm" placeholder="Find more friends" value={searchQuery} onChange={this.handleSearchChange}
+                                       onFocus={()=>this.setState({isFocused: true})} onBlur={()=>this.setState({isFocused: false})} />
+                                <button type="button" className="searchButton" onClick={() => this.searchFriends()}>
                                     <i className="fa fa-search search-icon"></i>
                                 </button>
                             </div>
-                            <ul id="search-results"></ul>
+                            {isSearching && <p>Searching...</p>}
+                            <SearchResults results={searchResults} addFriend={this.addFriend} />
                         </div>
                     </div>
                 </div>
-                {
-                    (this.state.isLoading.friendsDreams || []).length > 0 &&
-                    <div>
-                        <p></p>
-                    </div>
-                }
                 {userFriendDreams.length > 0 && !this.state.isLoading.friendsDreams ? (
                     userFriendDreams.map(dream => (
                         <FriendDreamItem key={dream.id} dream={dream}/>
@@ -278,15 +486,13 @@ class Home extends React.Component {
                     </div>
                 )}
 
-
                 <button className="floating-button" onClick={() => {
                     window.location.href = '/add_dream'
                 }}>Add dream</button>
-
             </div>
         );
-
     }
 }
-
-createRoot(document.getElementById('root')).render(<Home/>);
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<Home />);

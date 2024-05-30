@@ -262,7 +262,9 @@ data {
 .liked {
     color: red;
 }
-
+.unliked-my{
+    color: white;
+}
 .comment-text {
     margin-left: 1.5em;
 }

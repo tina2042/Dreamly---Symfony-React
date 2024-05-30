@@ -6,6 +6,7 @@ use App\Entity\Friend;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,7 +18,7 @@ class FriendApiController extends AbstractController
     {
         if ($request->isMethod('POST')) {
             return $this->add_friend($request, $entityManager);
-        } else {
+        } else{
             return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
         }
     }
@@ -29,8 +30,9 @@ class FriendApiController extends AbstractController
         //dzięki temu wyszukiwanie znajomego bedzie tylko po user_1
         $requestData = json_decode($request->getContent(), true);
 
-        $user1Id = $requestData['user_1'];//wtedy w post trzeba podac samo id, nie "/api/users/id"
-        $user2Id = $requestData['user_2'];//może do zmieny gdy bedzie logika dodawania znajomych
+        $user1Id = $requestData['user_id'];//wtedy w post trzeba podac samo id, nie "/api/users/id"*/
+        $user2Id = $this->getUser()->getId();
+
         $userRepository = $entityManager->getRepository(User::class);
         // Get users from the database
         $user1 = $userRepository->find($user1Id);
@@ -59,4 +61,5 @@ class FriendApiController extends AbstractController
         ]);
 
     }
+
 }
