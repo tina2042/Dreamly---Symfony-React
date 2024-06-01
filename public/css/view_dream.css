@@ -37,6 +37,7 @@
 }
 .likes, .comment_icon{
     display: flex;
+    align-items: center;
 }
 .view-dream #social-icons {
     display: flex;

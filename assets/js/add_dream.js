@@ -33,7 +33,6 @@ class Add_dream extends React.Component {
 
         const { title, content, emotion, privacy } = this.state;
         const token = localStorage.getItem('jwt');
-        console.log(token);
         axios.post('/api/add_dream', {
             title,
             content,
@@ -47,7 +46,6 @@ class Add_dream extends React.Component {
         })
             .then(response => {
                 // Handle success, maybe redirect or update state
-                console.log(response.data);
                 window.location.href='/home';
             })
             .catch(error => {

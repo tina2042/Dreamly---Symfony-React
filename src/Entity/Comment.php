@@ -23,13 +23,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['comment:write']]
 )]
 #[Post(
-    uriTemplate: '/{dream_id}/add_comment',
-    uriVariables: [
-        'dream_id' => new Link(
-            fromClass: Dream::class
-        )
-    ],
+    uriTemplate: '/add_comment',
     controller: CommentApiController::class,
+    normalizationContext: ['groups' => ['comment:read']],
     denormalizationContext: [
         'groups' => ['comment:write']
     ])]
@@ -38,25 +34,26 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read'])]
+    #[Groups(['comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?string $comment_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['read'])]
+    #[Groups(['comment:read'])]
     private ?\DateTimeInterface $comment_date;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?Dream $dream = null;
 
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?User $owner = null;
 
     public function __construct(){

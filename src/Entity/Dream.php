@@ -109,7 +109,7 @@ class Dream
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'dream', orphanRemoval: true)]
-    #[Groups(['dream:read', 'user:read'])]
+    #[Groups(['dream:read', 'user:read', 'dream:write', 'user:write'])]
     private Collection $comments;
 
     /**

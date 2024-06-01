@@ -23,7 +23,9 @@ class Home extends React.Component {
             isSearching: false,
             isFocused: false, // New state for tracking focus
             userLikes: [], // New state for user likes,
-            didUserLikedThis:  {}
+            didUserLikedThis:  {},
+            dreamsComments: [],
+            isAddingComment: null,
         };
     }
 
@@ -129,7 +131,26 @@ class Home extends React.Component {
             .catch(error => {
                 console.error('Error fetching user friends:', error);
             });
+        await axios.get('/api/comments', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/ld+json'
+            }
+        })
+            .then(response => {
+                const fetchData = response.data;
+                const comments = fetchData['hydra:member'].map(comment=>{
+                    return {
+                        ...comment,
+                        dreamId: +comment.dream.split('/').pop(),
+                    };
+                });
 
+                this.setState({dreamsComments: comments});
+            })
+            .catch(error => {
+                console.error('Error fetching dreams comments:', error);
+            });
 
     }
 
@@ -180,10 +201,10 @@ class Home extends React.Component {
                         let latestDream = null;
                         if (userDreams.length > 0) {
                             latestDream = userDreams[userDreams.length - 1];
+                            latestDream.likes = latestDream.likes + 1;
+                            userDreams[userDreams.length - 1] = latestDream;
+                            this.setState({userDreams: userDreams});
                         }
-                        latestDream.likes = latestDream.likes + 1;
-                        userDreams[userDreams.length - 1] = latestDream;
-                        this.setState({userDreams: userDreams});
                     } else {
                         let userFriendsDreams = this.state.userFriendDreams;
                         const likedDream = userFriendsDreams.find(dream => dream.id === dream_id);
@@ -226,10 +247,10 @@ class Home extends React.Component {
                     let latestDream = null;
                     if (userDreams.length > 0) {
                         latestDream = userDreams[userDreams.length - 1];
+                        latestDream.likes = latestDream.likes - 1;
+                        userDreams[userDreams.length - 1] = latestDream;
+                        this.setState({userDreams: userDreams});
                     }
-                    latestDream.likes = latestDream.likes - 1;
-                    userDreams[userDreams.length - 1] = latestDream;
-                    this.setState({userDreams: userDreams});
                 } else {
                     let userFriendsDreams = this.state.userFriendDreams;
                     const likedDream = userFriendsDreams.find(dream => dream.id === dream_id);
@@ -243,11 +264,6 @@ class Home extends React.Component {
             console.error('Error removing like:', error);
         }
 
-    }
-
-
-    handleComment = async  (commentText, dreamId, isMyDream)=> {
-        console.log("Comment added");
     }
 
     searchFriends = async () => {
@@ -303,7 +319,7 @@ class Home extends React.Component {
 
             }
             return (
-                <div>
+                <div data-id={dream.id}>
                     <div className="my-dream-top">
                         <h3 className="block-name">My last dream</h3>
                         <button type="button" className="dream-list-btn" onClick={() => {
@@ -321,14 +337,96 @@ class Home extends React.Component {
                         <p>{dream.content}</p>
                         <div className="social-icons">
                             <div className="likes" onClick={() => this.handleLikeAdd(dream.id, true)}>
-                                <i className={`fa-solid fa-heart fa-xl ${liked ? 'liked' : 'unliked-my'}`}></i> {/* Add 'liked' class if liked */}
+                                <i className={`fa-solid fa-heart fa-xl ${liked ? 'liked' : 'unliked-my'}`}></i>
                                 <p className="like-amount">{dream.likes}</p>
                             </div>
-                            <div className="comment_icon" onClick={() => this.handleComment("some text", dream.id, true)}>
+                            <div className="comment_icon"
+                                 onClick={() => {
+                                     if(this.state.isAddingComment === dream.id) this.setState({isAddingComment: null})
+                                     else this.setState({isAddingComment: dream.id})}
+                                 }
+                            >
                                 <i className="fa-solid fa-comment fa-xl"></i>
                                 <p>{dream.commentsAmount}</p>
                             </div>
                         </div>
+                        {
+                            this.state.isAddingComment === dream.id &&
+                            <div className="comments">
+                                <div className="comments-list">
+                                    {this.state.dreamsComments.filter(comment=>{
+                                        return dream.id === comment.dreamId;
+                                    }).map(comment=>
+                                        <div className="single-comment" key={comment.id}>
+                                            <p className="single-comment-date">
+                                                {(new Date(comment.comment_date)).toLocaleDateString()}
+                                            </p>
+                                            <p className="single-comment-content">{comment.comment_content}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <form onSubmit={e => {
+                                    e.preventDefault();
+                                    const data = new FormData(e.target);
+                                    const token = localStorage.getItem('jwt');
+                                    if(data.get('comment').length<5){
+
+                                        alert("Comment must be at least 5 characters long");
+                                        return;
+                                    }
+                                    axios.post('/api/add_comment', {
+                                        comment: data.get('comment'),
+                                        dream_id: dream.id,
+                                        },
+                                    {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`,
+                                            'Content-Type': 'application/ld+json'
+                                        },
+                                    })
+                                        .then(response => {
+                                            axios.get('/api/comments', {
+                                                headers: {
+                                                    'Authorization': `Bearer ${token}`,
+                                                    'Content-Type': 'application/ld+json'
+                                                }
+                                            })
+                                                .then(response => {
+                                                    const fetchData = response.data;
+                                                    const comments = fetchData['hydra:member'].map(comment=>{
+                                                        return {
+                                                            ...comment,
+                                                            dreamId: +comment.dream.split('/').pop(),
+                                                        };
+                                                    });
+
+                                                    this.setState({dreamsComments: comments});
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error fetching dreams comments:', error);
+                                                });
+
+                                            let userDreams = [...this.state.userDreams];
+                                            let latestDream = null;
+                                            if (userDreams.length > 0) {
+                                                latestDream = userDreams[userDreams.length - 1];
+                                                latestDream.commentsAmount = latestDream.commentsAmount + 1;
+                                                userDreams[userDreams.length - 1] = latestDream;
+                                                this.setState({userDreams: userDreams});
+                                            }
+                                            e.target.reset();
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                        });
+                                }}>
+                                    <div className="add-comment">
+                                        <textarea name="comment" minLength={5}  placeholder="Add a comment..."></textarea>
+                                        <button type="submit">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        }
                     </div>
                 </div>
             )
@@ -341,15 +439,16 @@ class Home extends React.Component {
         );
 
         const FriendDreamItem = ({dream}) => {
-            const  didUserLikedThis  = this.state.didUserLikedThis;
+            const didUserLikedThis = this.state.didUserLikedThis;
             let liked = false;
-            if(Object.keys(didUserLikedThis).includes(dream.id.toString())){
+            if (Object.keys(didUserLikedThis).includes(dream.id.toString())) {
                 liked = didUserLikedThis[dream.id.toString()].liked; // Check if the dream is liked
             }
             return (
-                <div key={dream.id} className="friend-dream">
+                <div key={dream.id} className="friend-dream" data-id={dream.id}>
                     <div className="top">
-                        <img alt="dream" src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
+                        <img alt="dream"
+                             src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
                         <p>{dream.ownerName}</p>
                         <h4>{dream.title}</h4>
                         <data>{dream.date}</data>
@@ -362,12 +461,90 @@ class Home extends React.Component {
                                 <p className="like-amount">{dream.likes}</p>
                             </div>
                             <div className="comment_icon"
-                                 onClick={() => this.handleComment("some text", dream.id, false)}>
+                                 onClick={() => {
+                                     if(this.state.isAddingComment === dream.id) this.setState({isAddingComment: null})
+                                     else this.setState({isAddingComment: dream.id})}
+                                 }
+                            >
                                 <i className="fa-solid fa-comment fa-xl"></i>
                                 <p>{dream.commentsAmount}</p>
                             </div>
                         </div>
                     </div>
+                    {
+                        this.state.isAddingComment === dream.id &&
+                        <div className="comments">
+                            <div className="comments-list">
+                                {this.state.dreamsComments.filter(comment=>{
+                                    return dream.id === comment.dreamId;
+                                }).map(comment=>
+                                    <div className="single-comment" key={comment.id}>
+                                        <p className="single-comment-date">
+                                            {(new Date(comment.comment_date)).toLocaleDateString()}
+                                        </p>
+                                        <p className="single-comment-content">{comment.comment_content}</p>
+                                    </div>
+                                )}
+                            </div>
+                            <form onSubmit={e => {
+                                e.preventDefault();
+                                const data = new FormData(e.target);
+                                const token = localStorage.getItem('jwt');
+                                if(data.get('comment').length<5){
+
+                                    alert("Comment must be at least 5 characters long");
+                                    return;
+                                }
+                                axios.post('/api/add_comment', {
+                                        comment: data.get('comment'),
+                                        dream_id: dream.id,
+                                    },
+                                    {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`,
+                                            'Content-Type': 'application/ld+json'
+                                        },
+                                    })
+                                    .then(response => {
+                                        e.target.reset();
+                                        axios.get('/api/comments', {
+                                            headers: {
+                                                'Authorization': `Bearer ${token}`,
+                                                'Content-Type': 'application/ld+json'
+                                            }
+                                        })
+                                            .then(response => {
+                                                const fetchData = response.data;
+                                                const comments = fetchData['hydra:member'].map(comment=>{
+                                                    return {
+                                                        ...comment,
+                                                        dreamId: +comment.dream.split('/').pop(),
+                                                    };
+                                                });
+
+                                                this.setState({dreamsComments: comments});
+                                            })
+                                            .catch(error => {
+                                                console.error('Error fetching dreams comments:', error);
+                                            });
+                                        let userFriendsDreams = this.state.userFriendDreams;
+                                        const likedDream = userFriendsDreams.find(dream => dream.id === dream.id);
+                                        const likedDreamId = userFriendsDreams.findIndex(dream => dream.id === dream.id);
+                                        likedDream.commentsAmount = likedDream.commentsAmount + 1;
+                                        userFriendsDreams[likedDreamId] = likedDream;
+                                        this.setState({userFriendsDreams:userFriendsDreams});
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                    });
+                            }}>
+                                <div className="add-comment">
+                                    <textarea name="comment" minLength={5} placeholder="Add a comment..."></textarea>
+                                    <button type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
                 </div>
             );
         }
@@ -402,7 +579,7 @@ class Home extends React.Component {
                 <div className="add-dream-form">
                     <form onSubmit={this.handleSubmit}>
                         <input type="text" name="title" value={this.state.title} onChange={this.handleChange} placeholder="Enter title"/>
-                        <textarea name="content" value={this.state.content} onChange={this.handleChange} placeholder="Write your dream here"></textarea>
+                        <textarea name="content" minLength={5}  value={this.state.content} onChange={this.handleChange} placeholder="Write your dream here"></textarea>
                         <div id="buttons">
                             <div className="emotion-picker">
                                 <input type="radio" id="HAPPY" name="emotion" value="HAPPY" onChange={this.handleChange}/>
@@ -464,7 +641,6 @@ class Home extends React.Component {
                     <div className="wrap">
                         <div className="search">
                             <div>
-
                                 <input type="text" className="searchTerm" placeholder="Find more friends" value={searchQuery} onChange={this.handleSearchChange}
                                        onFocus={()=>this.setState({isFocused: true})} onBlur={()=>this.setState({isFocused: false})} />
                                 <button type="button" className="searchButton" onClick={() => this.searchFriends()}>

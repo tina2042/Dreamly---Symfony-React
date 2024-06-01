@@ -25,7 +25,6 @@ class Dreams_list extends React.Component {
             .then(response => {
                 const fetchData = response.data;
                 this.setState({userDreams: fetchData})
-                console.log('Dane pobrane z API ():', this.state.userDreams);
             })
             .catch(error => {
                 console.error('Error fetching user dreams:', error);

@@ -88,6 +88,7 @@ button:hover {
 }
 
 .my-dream {
+    cursor: pointer;
     background-image: url(../img/menu.png);
     background-size: cover;
     background-repeat: no-repeat;
@@ -144,6 +145,7 @@ data {
 }
 
 .my-dream > p {
+    margin-right: 1em;
     margin-top: 1em;
     margin-left: 10vw;
 }
@@ -163,6 +165,7 @@ data {
 }
 
 .social-icons > div {
+    cursor: pointer;
     display: flex;
 }
 
@@ -213,10 +216,13 @@ data {
 .friend-dream > .bottom {
     display: flex;
 }
-
+.bottom > p {
+    max-height: 10em;
+    overflow: auto;
+    margin-top: 0.5em;
+}
 .friend-dream > .bottom > p {
     margin-left: 14vw;
-    margin-top: -3vh;
     width: 61vw;
 }
 
@@ -259,12 +265,7 @@ data {
     margin-right: 10px;
 }
 
-.liked {
-    color: red;
-}
-.unliked-my{
-    color: white;
-}
+
 .comment-text {
     margin-left: 1.5em;
 }
@@ -376,7 +377,7 @@ data {
 }
 
 .emoji {
-    font-size: 40px;
+    font-size: xx-large;
     cursor: pointer;
 }
 
@@ -399,6 +400,7 @@ input[type="radio"]:checked + .emoji {
     }
 
     .my-dream {
+        cursor: pointer;
         width: 90%;
     }
 
