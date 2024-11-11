@@ -26,6 +26,17 @@ class Home extends React.Component {
             didUserLikedThis:  {},
             dreamsComments: [],
             isAddingComment: null,
+            tags: ["sen", ],
+            inputTag: "",
+            maxCharactersLengthTag: 20,
+            maxLengthTags: 10,
+            errors: {
+                length: false,
+                lengthTags: false,
+                validChar: false,
+                already: false,
+                startChar: false
+            }
         };
     }
 
@@ -34,6 +45,61 @@ class Home extends React.Component {
             [e.target.name]: e.target.value
         });
     }
+
+    handleTagChange = (e) => {
+        let value = e.target.value;
+
+
+        if (value.includes(' ') || value.includes(',')) {
+            console.log('jest');
+            value = value.trim().replace(/,$/, '');
+
+
+            if (value.length > 0) {
+                this.addTag(value);
+            }
+
+
+            this.setState({ inputTag: '' });
+        } else {
+
+            this.setState({
+                inputTag: value.slice(0, this.state.maxCharactersLengthTag)
+            });
+        }
+    };
+
+    addTag = (tag) => {
+        const { tags, maxCharactersLengthTag, maxLengthTags } = this.state;
+        const patternTag = /^[A-Za-z0-9ء-ي_ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/g;
+        let errors = {};
+
+        if (tag.length > maxCharactersLengthTag) {
+            errors.length = true;
+        } else if (/^_/.test(tag)) {
+            errors.startChar = true;
+        } else if (tags.length === maxLengthTags) {
+            errors.lengthTags = true;
+        } else if (!patternTag.test(tag)) {
+            errors.validChar = true;
+        } else if (tags.includes(tag)) {
+            errors.already = true;
+        } else {
+            this.setState({
+                tags: [...tags, tag],
+                errors: {}
+            });
+        }
+
+
+        this.setState({ errors });
+    };
+
+    removeTag = (tagToRemove) => {
+        this.setState({
+            tags: this.state.tags.filter(tag => tag !== tagToRemove)
+        });
+    };
 
     handleSubmit = (e) => {
         e.preventDefault();
@@ -309,9 +375,14 @@ class Home extends React.Component {
     }
 
     render() {
-        const { userDreams, userFriendDreams, searchResults, searchQuery, isSearching } = this.state;
+        const { userDreams, userFriendDreams, searchResults, searchQuery, isSearching, tags, inputTag, maxCharactersLengthTag, maxLengthTags, errors } = this.state;
         const UserDreamItem = ({dream}) => {
-            const formattedDate = new Date(dream.date).toLocaleDateString('de-DE');
+            const options = {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+            };
+            const formattedDate = new Date(dream.date).toLocaleDateString(undefined, options);
             const { didUserLikedThis } = this.state;
             let liked = false;
             if(Object.keys(didUserLikedThis).includes(dream.id.toString())){
@@ -444,6 +515,13 @@ class Home extends React.Component {
             if (Object.keys(didUserLikedThis).includes(dream.id.toString())) {
                 liked = didUserLikedThis[dream.id.toString()].liked; // Check if the dream is liked
             }
+            const options = {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+            };
+
+            const formattedDate = new Date(dream.date).toLocaleDateString(undefined, options);
             return (
                 <div key={dream.id} className="friend-dream" data-id={dream.id}>
                     <div className="top">
@@ -451,7 +529,7 @@ class Home extends React.Component {
                              src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
                         <p>{dream.ownerName}</p>
                         <h4>{dream.title}</h4>
-                        <data>{dream.date}</data>
+                        <data>{formattedDate}</data>
                     </div>
                     <div className="bottom">
                         <p>{dream.content}</p>
@@ -578,20 +656,75 @@ class Home extends React.Component {
             <div>
                 <div className="add-dream-form">
                     <form onSubmit={this.handleSubmit}>
-                        <input type="text" name="title" value={this.state.title} onChange={this.handleChange} placeholder="Enter title"/>
-                        <textarea name="content" minLength={5}  value={this.state.content} onChange={this.handleChange} placeholder="Write your dream here"></textarea>
-                        <div id="buttons">
+                        <input type="text" name="title" value={this.state.title} onChange={this.handleChange}
+                               placeholder="Enter title"/>
+                        <hr></hr>
+                        <section className="wrappers">
+                            <div className="tags">
+                                <div className={`wrapper-tags ${inputTag ? 'focus' : ''}`}>
+                                    <div className="view-tags">
+                                        {tags.map((tag, index) => (
+                                            <span key={index} className="tag" data-tag={tag}>
+                                            {tag}
+                                                <i
+                                                    className="fa fa-close"
+                                                    onClick={() => this.removeTag(tag)}
+                                                ></i>
+                                        </span>
+                                        ))}
+                                        <input
+                                            type="text"
+                                            className="input-tag"
+                                            value={inputTag}
+                                            onChange={this.handleTagChange}
+                                            onKeyUp={(e) => e.key === 'Enter' && this.addTag(e)}
+                                            placeholder="Add tag"
+                                        />
+                                    </div>
+                                </div>
+
+                                {this.state.errors.length &&
+                                    <div className="show-error length">Tag must be between 1 and 20 characters.</div>}
+                                {this.state.errors.lengthTags &&
+                                    <div className="show-error lengthTags">You cannot add more than 10 tags.</div>}
+                                {this.state.errors.validChar &&
+                                    <div className="show-error validChar">Use only letters or numbers.</div>}
+                                {this.state.errors.already && <div className="show-error already">This tag is already added.</div>}
+                                {this.state.errors.startChar &&
+                                    <div className="show-error startChar">Tag must start with a letter.</div>}
+
+                                <div className="show-count-all">
+                                    <div className="count-character-tag">
+                                        <span>{maxCharactersLengthTag - inputTag.length}</span> characters left.
+                                    </div>
+                                    <div className="count-tags">
+                                        <span>{maxLengthTags - tags.length}</span> tags left.
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="emotion-picker">
-                                <input type="radio" id="HAPPY" name="emotion" value="HAPPY" onChange={this.handleChange}/>
+                                <input type="radio" id="HAPPY" name="emotion" value="HAPPY"
+                                       onChange={this.handleChange}/>
                                 <label htmlFor="HAPPY" className="emoji">😊</label>
-                                <input type="radio" id="NEUTRAL" name="emotion" value="NEUTRAL" onChange={this.handleChange}/>
+                                <input type="radio" id="NEUTRAL" name="emotion" value="NEUTRAL"
+                                       onChange={this.handleChange}/>
                                 <label htmlFor="NEUTRAL" className="emoji">😐</label>
-                                <input type="radio" id="SAD" name="emotion" value="SAD" onChange={this.handleChange}/>
+                                <input type="radio" id="SAD" name="emotion" value="SAD"
+                                       onChange={this.handleChange}/>
                                 <label htmlFor="SAD" className="emoji">😢</label>
                             </div>
+
+                        </section>
+                        <hr></hr>
+                        <textarea name="content" minLength={5} value={this.state.content} onChange={this.handleChange}
+                                  placeholder="Write your dream here"></textarea>
+                        <div id="buttons">
+
                             <div className="dropdown-list">
                                 <label htmlFor="privacy">
-                                    <select name="privacy" id="privacy" value={this.state.privacy} onChange={this.handleChange}>
+                                    <select name="privacy" id="privacy" value={this.state.privacy}
+                                            onChange={this.handleChange}>
                                         <option value="PUBLIC">Public</option>
                                         <option value="PRIVATE">Private</option>
                                     </select>
@@ -599,7 +732,8 @@ class Home extends React.Component {
                             </div>
                             <button type="button" className="cancel-btn" onClick={() => {
                                 window.location.href = '/home'
-                            }}>Cancel</button>
+                            }}>Cancel
+                            </button>
                             <button type="submit" className="submit">Add Dream</button>
                         </div>
                     </form>
@@ -641,14 +775,16 @@ class Home extends React.Component {
                     <div className="wrap">
                         <div className="search">
                             <div>
-                                <input type="text" className="searchTerm" placeholder="Find more friends" value={searchQuery} onChange={this.handleSearchChange}
-                                       onFocus={()=>this.setState({isFocused: true})} onBlur={()=>this.setState({isFocused: false})} />
+                                <input type="text" className="searchTerm" placeholder="Find more friends"
+                                       value={searchQuery} onChange={this.handleSearchChange}
+                                       onFocus={() => this.setState({isFocused: true})}
+                                       onBlur={() => this.setState({isFocused: false})}/>
                                 <button type="button" className="searchButton" onClick={() => this.searchFriends()}>
                                     <i className="fa fa-search search-icon"></i>
                                 </button>
                             </div>
                             {isSearching && <p>Searching...</p>}
-                            <SearchResults results={searchResults} addFriend={this.addFriend} />
+                            <SearchResults results={searchResults} addFriend={this.addFriend}/>
                         </div>
                     </div>
                 </div>
