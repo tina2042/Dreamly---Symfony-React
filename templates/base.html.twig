@@ -33,6 +33,10 @@
             <i class="fa-solid fa-calendar-days fa-2xl calendar"></i>
             <span>Calendar</span>
         </a>
+        <a href="{{path('search-dreams')}}" class="nav-link">
+           <i class="fa-solid fa-magnifying-glass fa-2xl search-dreams" ></i>
+            <span>Search</span>
+        </a>
         {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('admin') }}" class="nav-link">
         {% else %}

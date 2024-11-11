@@ -49,18 +49,18 @@ class UserLike
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['dream:read', 'like:read', 'like:write'])]
+    //#[Groups([ 'like:read', 'like:write'])]
     private ?\DateTimeInterface $like_date ;
 
     #[ORM\ManyToOne(inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['dream:read', 'like:read', 'like:write'])]
+    //#[Groups(['dream:read', 'like:read', 'like:write'])]
     private ?Dream $dream = null;
 
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['dream:read', 'like:read', 'like:write', 'user:read'])]
+    //#[Groups(['dream:read', 'like:read', 'like:write', 'user:read'])] zmienione przy get dreams/id, jak zepsulo cos to wrócić
     private ?User $owner = null;
 
     public function __construct(){

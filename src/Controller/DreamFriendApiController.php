@@ -54,6 +54,11 @@ class DreamFriendApiController extends AbstractController
 
         $dreamsData = [];
         foreach ($friendDreams as $dream) {
+            $tags=[];
+            foreach ($dream->getTags() as $tag){
+                $tag=$tag->getName();
+                $tags[]=$tag;
+            }
             $dreamsData[] = [
                 'ownerName' => $dream->getOwner()->getDetail()->getName(),
                 'id' => $dream->getId(),
@@ -64,6 +69,7 @@ class DreamFriendApiController extends AbstractController
                 'date' => $dream->getDate()->format('Y-m-d'),
                 'likes' => $dream->getLikes()->count(),
                 'commentsAmount' => $dream->getComments()->count(),
+                'tags' => $tags
             ];
         }
 

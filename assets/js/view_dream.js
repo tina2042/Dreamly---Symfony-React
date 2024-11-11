@@ -14,6 +14,7 @@ class ViewDream extends React.Component {
             dreamsComments: [],
             isAddingComment: null,
             myLikeId: null,
+            tags:[]
         };
     }
 
@@ -132,12 +133,33 @@ class ViewDream extends React.Component {
         return (
             <div className="view-dream">
                 <div id="top">
-                    <img src={user.detail.photo} alt="Photo" />
+                    <img src={user.detail.photo} alt="Photo"/>
                     <p>{user.detail.name}</p>
                     <h4>Title: {userDream.title}</h4>
                     <data>{new Date(userDream.date).toLocaleDateString('de-DE')}</data>
                 </div>
-
+                <section className="wrapper">
+                    {userDream.tags && userDream.tags.length > 0 && (
+                        <div className="tags">
+                            {userDream.tags.map(tag => (
+                                <span key={'dream-tag-' + tag['@id']} className="tag">
+                {tag.name}
+            </span>
+                            ))}
+                        </div>
+                    )}
+                    <div className="emotion">
+                        {userDream.emotion.emotion_name === 'HAPPY' && (
+                            <label className="emoji">😊</label>
+                        )}
+                        {userDream.emotion.emotion_name === 'NEUTRAL' && (
+                            <label className="emoji">😐</label>
+                        )}
+                        {userDream.emotion.emotion_name === 'SAD' && (
+                            <label className="emoji">😢</label>
+                        )}
+                    </div>
+                </section>
                 <div id="bottom">
                     <p>{userDream.dream_content}</p>
                     <div id="social-icons">
@@ -150,8 +172,8 @@ class ViewDream extends React.Component {
                         </div>
                         <div className="comment_icon"
                              onClick={() => {
-                                 if (this.state.isAddingComment === dreamId) this.setState({ isAddingComment: null })
-                                 else this.setState({ isAddingComment: dreamId })
+                                 if (this.state.isAddingComment === dreamId) this.setState({isAddingComment: null})
+                                 else this.setState({isAddingComment: dreamId})
                              }
                              }
                         >
@@ -211,4 +233,4 @@ class ViewDream extends React.Component {
     }
 }
 
-createRoot(document.getElementById('root')).render(<ViewDream />);
+createRoot(document.getElementById('root')).render(<ViewDream/>);

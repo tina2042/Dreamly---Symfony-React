@@ -21,13 +21,12 @@ body {
     -moz-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
     width: 77vw;
-    margin: 0 auto;
-    /*height: 570px;*/
-    /*overflow: hidden;*/
+    margin: 5vh auto;
     position: relative;
 }
 
 .header {
+    border-radius:7px;
     height: 50px;
     width: 77vw;
     background: #9a87e2;
@@ -167,15 +166,30 @@ body {
 }
 
 .details {
-    position: absolute;
+    overflow: scroll;
+    height: 22vh;
+    position: fixed;
+    border-radius: 7px;
     left: 0;
     width: 100%;
-    background: #ffffff;
+    background: white;
     color: #000000;
     margin-top: 5px;
-    border-radius: 4px;
-}
 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+.dream{
+    background: white;
+    height: 10vh !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
 .details.in {
     -webkit-animation: moveFromTopFade .5s ease both;
     -moz-animation: moveFromTopFade .5s ease both;

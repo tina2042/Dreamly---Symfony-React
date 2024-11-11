@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use App\Entity\Dream;
+use App\Entity\Tags;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use function Sodium\add;
 
 class DreamApiController extends AbstractController
 {
@@ -36,6 +38,11 @@ class DreamApiController extends AbstractController
 
         $dreamsData = [];
         foreach ($dreams as $dream) {
+            $tags=[];
+            foreach ($dream->getTags() as $tag){
+                $tag=$tag->getName();
+                $tags[]=$tag;
+            }
             $dreamsData[] = [
                 'ownerName' => $dream->getOwner()->getDetail()->getName(),
                 'ownerId'=> $dream->getOwner()->getId(),
@@ -47,6 +54,7 @@ class DreamApiController extends AbstractController
                 'date' => $dream->getDate()->format('Y-m-d H:i:s'),
                 'likes' => $dream->getLikes()->count(),
                 'commentsAmount' => $dream->getComments()->count(),
+                'tags' => $tags
             ];
         }
 
@@ -64,6 +72,22 @@ class DreamApiController extends AbstractController
         $dream->setTitle($data['title']);
         $dream->setDreamContent($data['content']);
         $dream->setOwner($user);
+        // Set tags
+        $tagsRepository = $entityManager->getRepository('App\Entity\Tags');
+        foreach ($data['tags'] as $tagName) {
+            // Check if the tag already exists
+            $tag = $tagsRepository->findOneBy(['name' => $tagName]);
+
+            // If it doesn't exist, create and persist a new tag
+            if (!$tag) {
+                $tag = new Tags();
+                $tag->setName($tagName);
+                $entityManager->persist($tag);
+            }
+
+            // Add the tag to the dream
+            $dream->addTag($tag);
+        }
 
         //Set privacy and emotion
         $privacyRepository = $entityManager->getRepository('App\Entity\Privacy');

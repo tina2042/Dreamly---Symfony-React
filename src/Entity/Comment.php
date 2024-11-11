@@ -38,11 +38,11 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read', 'comment:write'])]
+    #[Groups(['comment:read', 'comment:write','dream:read', 'dream:write'])]
     private ?string $comment_content = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:write','dream:read', 'dream:write'])]
     private ?\DateTimeInterface $comment_date;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]

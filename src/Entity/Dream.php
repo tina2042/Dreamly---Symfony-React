@@ -124,11 +124,19 @@ class Dream
     #[Groups(['dream:read','dream:write', 'user:read'])]
     private ?User $owner = null;
 
+    /**
+     * @var Collection<int, Tags>
+     */
+    #[ORM\ManyToMany(targetEntity: Tags::class, mappedBy: 'dreams')]
+    #[Groups(['dream:read','dream:write', 'user:read'])]
+    private Collection $tags;
+
     public function __construct()
     {
         $this->date = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -259,6 +267,34 @@ class Dream
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tags>
+     */
+    public function getTags(): Collection
+    {
+
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addDream($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeDream($this);
+        }
 
         return $this;
     }

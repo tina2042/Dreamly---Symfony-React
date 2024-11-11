@@ -27,7 +27,7 @@ class Emotion
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['emotion:read', 'emotion:write'])]
+    #[Groups(['emotion:read', 'emotion:write', 'dream:read'])]
     private ?string $emotion_name = null;
 
     public function getId(): ?int
