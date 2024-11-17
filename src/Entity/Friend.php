@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\FriendApiController;
 use App\Repository\FriendsRepository;
@@ -16,12 +19,20 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     normalizationContext: ['groups' => ['friend:read']],
     denormalizationContext: ['groups' => ['friend:write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'user_1.email' => 'exact', // Filter dreams by the exact tag name
+])]
 #[Post(
     uriTemplate: 'friends/add',
     controller: FriendApiController::class,
     denormalizationContext: [
         'groups' => ['dream:write']
     ])]
+#[GetCollection(
+    normalizationContext: [
+    'groups' => ['friend:read']
+]
+)]
 class Friend
 {
     #[ORM\Id]

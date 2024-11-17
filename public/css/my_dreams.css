@@ -3,7 +3,7 @@
     margin-top: 10em;
     width:80%;
     display: flex;
-   flex-direction: column;
+    flex-direction: column;
     gap: 20px;
     height: 100%;
 }

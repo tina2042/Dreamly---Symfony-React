@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PrivacyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PrivacyRepository::class)]
 #[ApiResource]
@@ -22,7 +23,7 @@ class Privacy
     {
         return $this->id;
     }
-
+    #[Groups(['dream:write', 'dream:read'])]
     public function getPrivacyName(): ?string
     {
         return $this->privacy_name;

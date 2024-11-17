@@ -2,25 +2,32 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
+import {Audio} from "react-loader-spinner";
 
 function Calendar() {
     const [userDreams, setUserDreams] = useState(null);
     const [events, setEvents] = useState([]);
     const [currentMonth, setCurrentMonth] = useState(moment().date(1));
     const [selectedDay, setSelectedDay] = useState(null); // State to track selected day
+    const [isLoading, setIsLoading]= useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
-
+        const email = localStorage.getItem('email');
         // Fetch data for the current user
         axios.get(`/api/dreams`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
+            },
+            params: {
+                'owner.email': email,
+                'itemsPerPage':50
             }
         })
             .then(response => {
-                setUserDreams(response.data);
+                setUserDreams(response.data['hydra:member']);
+                setIsLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
@@ -28,6 +35,7 @@ function Calendar() {
     }, []);
 
     useEffect(() => {
+
         if (userDreams) {
             const formattedDreams = userDreams.map(dream => ({
                 ...dream,
@@ -92,8 +100,12 @@ function Calendar() {
                     todaysEvents.map((ev, index) => (
                         <div key={index} className="event">
                             <div className="event-category blue"></div>
-                            <span>{ev.title}</span>
-                            <span>{ev.content}</span>
+                            <span onClick={ ()=>
+                            {window.location.href = `/dreams/${ev['@id'].split('/').pop()}`}}>
+                                {ev.title}</span>
+                            <span onClick={ ()=>
+                            {window.location.href = `/dreams/${ev['@id'].split('/').pop()}`}}>
+                                {ev.dream_content}</span>
                         </div>
                     ))
                 ) : (
@@ -147,10 +159,24 @@ function Calendar() {
     };
 
     return (
-        <div id="calendar">
-            {drawHeader()}
-            {drawMonth()}
-        </div>
+        isLoading ? (
+            <div className="loading">
+                <Audio
+                    height="150"
+                    width="150"
+                    radius="9"
+                    color="#9a87e2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle
+                    wrapperClass
+                />
+            </div>
+        ) : (
+            <div id="calendar">
+                {drawHeader()}
+                {drawMonth()}
+            </div>
+        )
     );
 }
 

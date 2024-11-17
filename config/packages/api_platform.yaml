@@ -10,6 +10,9 @@ api_platform:
     eager_loading:
         force_eager: false
     defaults:
+        pagination_partial: true # Disabled by default
+        pagination_enabled: true
+        pagination_client_items_per_page: true
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
@@ -18,6 +21,10 @@ api_platform:
             rfc_7807_compliant_errors: true
     event_listeners_backward_compatibility_layer: false
     keep_legacy_inflector: false
+    collection:
+        pagination:
+            items_per_page_parameter_name: itemsPerPage # Default value
+            enabled: true
     swagger:
         api_keys:
             JWT:

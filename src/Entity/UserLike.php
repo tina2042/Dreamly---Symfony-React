@@ -60,7 +60,7 @@ class UserLike
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    //#[Groups(['dream:read', 'like:read', 'like:write', 'user:read'])] zmienione przy get dreams/id, jak zepsulo cos to wrócić
+    #[Groups(['dream:read', 'like:read', 'like:write', 'user:read'])]
     private ?User $owner = null;
 
     public function __construct(){

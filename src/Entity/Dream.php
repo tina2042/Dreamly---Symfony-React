@@ -2,14 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Elasticsearch\Filter\MatchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Controller\DreamApiController;
-use App\Controller\DreamController;
 use App\Controller\DreamFriendApiController;
 use App\Repository\DreamsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,9 +36,20 @@ use Symfony\Component\Validator\Constraints as Assert;
         'groups' => ['dream:write']
     ]
 )]
+#[ApiFilter(OrderFilter::class, properties: [
+    'date' => 'DESC', // Default order for the date field
+])]
+#[ApiFilter(SearchFilter::class, properties: [
+    'tags.name' => 'exact', // Filter dreams by the exact tag name
+    'owner.email' => 'exact',
+    'emotion.emotion_name' => 'exact',
+    'privacy.privacy_name' => 'exact',
+    'dream_content' => 'partial',
+    'title' => 'partial'
+])]
 #[GetCollection(
     uriTemplate: '/dreams',
-    controller: DreamApiController::class,
+    paginationItemsPerPage: 10,
     description: 'Get dreams of user',
     normalizationContext: [
         'groups' => ['dream:read']
@@ -70,6 +85,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 
 #[UniqueEntity(fields: ['id'], message: "There is already a dream with this id")]
+
 class Dream
 {
     #[ORM\Id]

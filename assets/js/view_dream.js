@@ -2,6 +2,7 @@ import '../styles/app.css';
 import React from 'react';
 import axios from 'axios';
 import { createRoot } from 'react-dom/client';
+import {Audio} from "react-loader-spinner";
 
 class ViewDream extends React.Component {
     constructor(props) {
@@ -10,11 +11,9 @@ class ViewDream extends React.Component {
         this.state = {
             dreamId: window.location.pathname.split('/')[2],
             userDream: null,
-            user: null,
-            dreamsComments: [],
             isAddingComment: null,
             myLikeId: null,
-            tags:[]
+
         };
     }
 
@@ -31,54 +30,32 @@ class ViewDream extends React.Component {
             });
 
             const fetchData = response.data;
-            this.setState({ userDream: fetchData });
 
-            // Fetch user details after fetching the dream
-            const userUrl = `${fetchData.owner}`;
-            const userResponse = await axios.get(userUrl, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                }
+            // Calculate myLikeId and liked status
+            const userId = fetchData.owner["@id"].split("/").pop();
+            const likedLike = fetchData.likes.find(like => like.owner["@id"].split('/').pop() === userId);
+            const likeId = likedLike ? likedLike['@id'].split('/').pop() : null;
+
+            this.setState({
+                userDream: fetchData,
+                dreamId: dreamId,
+                myLikeId: likeId, // Set myLikeId here
             });
-
-            const userFetchData = userResponse.data;
-            this.setState({ user: userFetchData });
-
-            // Fetch comments
-            const comments = [];
-            for (const comment of fetchData.comments) {
-                const commentId = comment.split('/').pop();
-                try {
-                    const commentsUrl = `/api/comments/${commentId}`;
-                    const commentsResponse = await axios.get(commentsUrl, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        }
-                    });
-
-                    const commentsFetchData = commentsResponse.data;
-                    comments.push(commentsFetchData);
-
-                } catch (error) {
-                    console.error('Błąd podczas pobierania danych:', error);
-                }
-            }
-            this.setState({ dreamsComments: comments });
-
         } catch (error) {
             console.error('Błąd podczas pobierania danych:', error);
         }
     }
+
     handleLikeAdd = async (dream_id) => {
         const { userDream, user, dreamId, myLikeId } = this.state;
         const token = localStorage.getItem('jwt');
 
         if(myLikeId!=null){
-            await this.handleUnlike(dream_id);
+            await this.handleUnlike(dreamId);
         }else{
             alert("Adding like...");
             try {
-                const response = await axios.post('/api/add_like', { dream_id }, {
+                const response = await axios.post('/api/add_like', { dreamId: dreamId }, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/ld+json'
@@ -95,7 +72,7 @@ class ViewDream extends React.Component {
         }
     }
 
-    handleUnlike = async (dream_id) => {
+    handleUnlike = async (dreamId) => {
         const token = localStorage.getItem('jwt');
         const likeId = this.state.myLikeId;
         alert("Removing your like...");
@@ -119,22 +96,29 @@ class ViewDream extends React.Component {
     }
 
     render() {
-        const { userDream, user, dreamId } = this.state;
+        const { userDream, dreamId, myLikeId } = this.state;
 
-        if (!userDream || !user) {
-            return <div>Loading...</div>;
+        if (!userDream ) {
+            return <div className="loading">
+                <Audio
+                    height="150"
+                    width="150"
+                    radius="9"
+                    color="#9a87e2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle
+                    wrapperClass
+                />
+            </div>;
         }
-        const userId = user.id.toString();
-        const likedLike = userDream.likes.find(like => like.owner.split('/').pop() === userId);
-        const liked = !!likedLike; // Convert found like object to boolean
-        const likeId = likedLike ? likedLike['@id'].split('/').pop() : null;
-        this.setState({myLikeId: likeId})
+
+        const liked = !!myLikeId;
 
         return (
             <div className="view-dream">
                 <div id="top">
-                    <img src={user.detail.photo} alt="Photo"/>
-                    <p>{user.detail.name}</p>
+                    <img src={userDream.owner.detail.photo} alt="Photo"/>
+                    <p>{userDream.owner.detail.name}</p>
                     <h4>Title: {userDream.title}</h4>
                     <data>{new Date(userDream.date).toLocaleDateString('de-DE')}</data>
                 </div>
@@ -142,9 +126,9 @@ class ViewDream extends React.Component {
                     {userDream.tags && userDream.tags.length > 0 && (
                         <div className="tags">
                             {userDream.tags.map(tag => (
-                                <span key={'dream-tag-' + tag['@id']} className="tag">
-                {tag.name}
-            </span>
+                                <span key={'dream-tag-' + tag['@id'].split("/").pop()} className="tag">
+                                    {tag.name}
+                                 </span>
                             ))}
                         </div>
                     )}
@@ -185,7 +169,7 @@ class ViewDream extends React.Component {
                         this.state.isAddingComment === dreamId &&
                         <div className="comments">
                             <div className="comments-list">
-                                {this.state.dreamsComments.map(comment => (
+                                {this.state.userDream.comments.map(comment => (
                                     <div className="single-comment" key={comment.id}>
                                         <p className="single-comment-date">
                                             {(new Date(comment.comment_date)).toLocaleDateString()}

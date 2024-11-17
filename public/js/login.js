@@ -24,8 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json()
             console.log(data)
             localStorage.setItem('jwt', data.token)
+            localStorage.setItem('email', email)
 
             if (!response.ok) {
+                alert('Login failed. Please try again.');
                 console.log(data.message)
                 messages.innerHTML = `<p>${data.message}</p>`
                 throw new Error('Login failed');

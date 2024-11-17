@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
     {{ parent() }}
+    <link href="{{ asset('css/my_dreams.css') }}" rel="stylesheet" >
    <link href="{{ asset('css/search.css') }}" rel="stylesheet" >
+
 {% endblock %}
 {% block javascripts %}
      <script type="text/javascript" src="{{ asset('build/search.js') }}"></script>

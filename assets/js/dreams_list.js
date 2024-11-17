@@ -16,14 +16,15 @@ class Dreams_list extends React.Component {
     async componentDidMount() {
 
         const token = localStorage.getItem('jwt');
-        await axios.get('/api/dreams', {
+        const email = localStorage.getItem('email');
+        await axios.get(`/api/dreams/?order%5Bdate%5D=desc&page=1&itemsPerPage=30&owner.email=${(email)}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         })
             .then(response => {
-                const fetchData = response.data;
+                const fetchData = response.data["hydra:member"];
                 this.setState({userDreams: fetchData})
             })
             .catch(error => {
@@ -37,22 +38,19 @@ class Dreams_list extends React.Component {
             const formattedDate = new Date(dream.date).toLocaleDateString('de-DE');
             return (
 
-
                     <div className="dream-tile" onClick={() => {
-                        window.location.href = `/dreams/${dream.id}`
+                        window.location.href = `/dreams/${dream["@id"].split("/").pop()}`
                     }}>
                         <h2 className="dream-title">{dream.title}</h2>
                         <p className="dream-description">{dream.content}</p>
                         <span className="dream-date">{formattedDate}</span>
                     </div>
 
-
-
             );
         };
         return (
             userDreams.map(dream => (
-                <UserDreamItem key={dream.id} dream={dream}/>
+                <UserDreamItem key={dream["@id"].split("/").pop()} dream={dream}/>
             )));
 
     }

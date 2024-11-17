@@ -27,7 +27,7 @@ class LikeApiController extends AbstractController
     public function like(Request $request, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\Response
     {
         $data = json_decode($request->getContent(), true);
-        $dream = $entityManager->getRepository(Dream::class)->find($data['dream_id']);
+        $dream = $entityManager->getRepository(Dream::class)->find($data['dreamId']);
         $like = new UserLike();
         $like->setOwner($this->getUser());
         $like->setDream($dream);
