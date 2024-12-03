@@ -53,7 +53,7 @@ class UserApiController extends AbstractController
         }
         $result=[];
         foreach ($users as $user) {
-           if(!in_array($user,$friends)) {
+           if($user->getId() != $userIdentifier && !in_array($user,$friends)) {
                 $result[] = [
                     'id' => $user->getId(),
                     'name' => $user->getDetail()->getName(),

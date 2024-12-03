@@ -30,3 +30,11 @@
     font-size: 14px;
     color: #666;
 }
+.loading-container, .message-container {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Dopasowuje wysokość do kontenera nadrzędnego */
+    min-height: 200px; /* Minimalna wysokość, aby środek był zawsze widoczny */
+}

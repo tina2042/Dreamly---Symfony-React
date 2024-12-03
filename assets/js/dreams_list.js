@@ -2,15 +2,15 @@ import '../styles/app.css';
 import React from 'react';
 import axios from 'axios';
 import {createRoot} from 'react-dom/client';
+import {Audio} from "react-loader-spinner";
 
 class Dreams_list extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            userDreams: []
+            userDreams: [],
+            isLoading: true
         };
-
     }
 
     async componentDidMount() {
@@ -25,7 +25,8 @@ class Dreams_list extends React.Component {
         })
             .then(response => {
                 const fetchData = response.data["hydra:member"];
-                this.setState({userDreams: fetchData})
+                this.setState({userDreams: fetchData,
+                                    isLoading: false})
             })
             .catch(error => {
                 console.error('Error fetching user dreams:', error);
@@ -33,7 +34,7 @@ class Dreams_list extends React.Component {
     }
 
     render() {
-        const {userDreams} = this.state;
+        const {userDreams, isLoading} = this.state;
         const UserDreamItem = ({dream}) => {
             const formattedDate = new Date(dream.date).toLocaleDateString('de-DE');
             return (
@@ -49,9 +50,30 @@ class Dreams_list extends React.Component {
             );
         };
         return (
-            userDreams.map(dream => (
-                <UserDreamItem key={dream["@id"].split("/").pop()} dream={dream}/>
-            )));
+            <div className="dream-container">
+                {isLoading ? (
+                    <div className="loading-container">
+                        <Audio
+                            height="120"
+                            width="120"
+                            radius="9"
+                            color="#263238"
+                            ariaLabel="three-dots-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                        />
+                    </div>
+                ) : userDreams.length > 0 ? (
+                    userDreams.map(dream => (
+                        <UserDreamItem key={dream["@id"].split("/").pop()} dream={dream}/>
+                    ))
+                ) : (
+                    <div className="message-container">
+                        No dreams added
+                    </div>
+                )}
+            </div>
+        );
 
     }
 }
