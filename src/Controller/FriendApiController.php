@@ -26,41 +26,30 @@ class FriendApiController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You must be logged in to add friend.')]
     public function add_friend(Request $request, EntityManagerInterface $entityManager):Response
     {
-        //Kontroler służy do wstawiania dwóch wierszy do bazy zamiast jednego,
-        //dzięki temu wyszukiwanie znajomego bedzie tylko po user_1
         $requestData = json_decode($request->getContent(), true);
-
-        $user1Id = $requestData['user_id'];//wtedy w post trzeba podac samo id, nie "/api/users/id"*/
+        $user1Id = $requestData['user_id'];
         $user2Id = $this->getUser()->getId();
-
         $userRepository = $entityManager->getRepository(User::class);
-        // Get users from the database
+
         $user1 = $userRepository->find($user1Id);
         $user2 = $userRepository->find($user2Id);
 
-        // Create the original friend entry
         $friend = new Friend();
         $friend->setUser1($user1);
         $friend->setUser2($user2);
 
-        // Persist the original friend entry
         $entityManager->persist($friend);
         $entityManager->flush();
 
-        // Create the mirrored friend entry
         $mirroredFriend = new Friend();
         $mirroredFriend->setUser1($user2);
         $mirroredFriend->setUser2($user1);
 
-        // Persist the mirrored friend entry
         $entityManager->persist($mirroredFriend);
         $entityManager->flush();
 
         return $this->json([
             'message' => 'Friends added successfully'
         ]);
-
     }
-
-
 }

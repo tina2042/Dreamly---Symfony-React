@@ -14,12 +14,7 @@ class DefaultController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function home(): Response
     {
-
-        $fdreams = ['Dream1', 'Dream2'];
-        return  $this->render('home/home.html.twig', [
-            'dream'=>"my last dream",
-            'fdreams' => $fdreams
-        ]);
+        return  $this->render('home/home.html.twig');
     }
 
     #[Route('/', name: 'welcome')]

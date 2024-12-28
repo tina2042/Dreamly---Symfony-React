@@ -26,19 +26,18 @@ class DreamFriendApiController extends AbstractController
     public function view_friend_dreams(Request $request, EntityManagerInterface $entityManager): Response
     {
         $userIdentifier = $this->getUser()->getId();
-
         $friendsRepository = $entityManager->getRepository(Friend::class);
         $friends=[];
         $friendIds = $friendsRepository->findBy(['user_1' => $userIdentifier]);
         foreach ($friendIds as $friend) {
             $friends[] = $friend->getUser2();
         }
-
         if($friends==null){
             return $this->json([
                 'friendDreams' => null
             ]);
         }
+
         $friendDreamsAll = [];
         foreach ($friends as $friend){
             if($friend!=null) {
@@ -51,7 +50,6 @@ class DreamFriendApiController extends AbstractController
                 $friendDreams[]=$dream;
             }
         }
-
         $dreamsData = [];
         foreach ($friendDreams as $dream) {
             $tags=[];
@@ -64,7 +62,6 @@ class DreamFriendApiController extends AbstractController
                 'id' => $dream->getId(),
                 'title' => $dream->getTitle(),
                 'content' => $dream->getDreamContent(),
-                //'privacy' => $dream->getPrivacy()->getPrivacyName(),
                 'emotion' => $dream->getEmotion()->getEmotionName(),
                 'date' => $dream->getDate()->format('Y-m-d'),
                 'likes' => $dream->getLikes(),
@@ -72,7 +69,6 @@ class DreamFriendApiController extends AbstractController
                 'tags' => $tags
             ];
         }
-
         return new JsonResponse($dreamsData);
     }
 

@@ -11,7 +11,6 @@
     <div class="notes">
         <img src="{{ asset('img/notes.svg') }}" alt="notes">
     </div>
-
     <div class="loginrectangle">
         <div class="top-section">
             <h3 class="Welcome">Welcome to <span>Dreamly</span></h3>
@@ -20,11 +19,8 @@
                 <a href="{{ path('app_login') }}">Sign in</a>
             </div>
         </div>
-
         <h1 class="Sign-up">Sign up</h1>
-
         {{ form_errors(registrationForm) }}
-
         {{ form_start(registrationForm) }}
         {{ form_row(registrationForm.email) }}
         <div class="name">

@@ -26,39 +26,27 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
 
             $firstName = $request->request->get('firstname');
             $surname = $request->request->get('surname');
 
-
+            // encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )
-
             );
 
-            // You might want to set other properties as well
             $user->setDetail(new UserDetail());
             $user->getDetail()->setName($firstName);
             $user->getDetail()->setSurname($surname);
-
-           /* // Get the role object for 'user' role
-            $roleRepository = $doctrine->getRepository(Role::class);
-            $userRole = $roleRepository->findOneBy(['role_name' => 'ROLE_USER']);
-
-            // Set the role for the user
-            $user->setRole($userRole);*/
             $user->setRoles(['ROLE_USER']);
-
             $user->setEmail($form->get('email')->getData());
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
             return $this->redirectToRoute('app_login');
         }
 

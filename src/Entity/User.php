@@ -51,17 +51,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     description: "Returns current user id",
     normalizationContext: [
         'groups' => ['user:read']
-    ], denormalizationContext: [
-        'groups' => ['user:write']
     ]
 )]
 #[POST(
     uriTemplate: '/search',
     controller: UserApiController::class,
     description: "Returns users by search",
-    normalizationContext: [
-        'groups' => ['user:read']
-    ], denormalizationContext: [
+    denormalizationContext: [
         'groups' => ['user:write']
     ]
 )]
@@ -101,9 +97,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write', 'dream:read'])]
     private ?UserDetail $detail = null;
 
-   /* #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Role $role = null;*/
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -158,7 +151,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -209,18 +201,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-   /* public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): static
-    {
-        $this->role = $role;
-
-        return $this;
-    }*/
 
     public function getUserStatistics(): ?UserStatistic
     {

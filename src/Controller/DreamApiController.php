@@ -68,41 +68,31 @@ class DreamApiController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $user = $this->getUser();
         $dream = new Dream();
-
         $dream->setTitle($data['title']);
         $dream->setDreamContent($data['content']);
         $dream->setOwner($user);
-        // Set tags
+
         $tagsRepository = $entityManager->getRepository('App\Entity\Tags');
         foreach ($data['tags'] as $tagName) {
-            // Check if the tag already exists
             $tag = $tagsRepository->findOneBy(['name' => $tagName]);
-
-            // If it doesn't exist, create and persist a new tag
             if (!$tag) {
                 $tag = new Tags();
                 $tag->setName($tagName);
                 $entityManager->persist($tag);
             }
-
-            // Add the tag to the dream
             $dream->addTag($tag);
         }
 
-        //Set privacy and emotion
         $privacyRepository = $entityManager->getRepository('App\Entity\Privacy');
         $privacy = $privacyRepository->findOneBy(['privacy_name' => $data['privacy']]);
         $dream->setPrivacy($privacy);
-
         $emotionRepository = $entityManager->getRepository('App\Entity\Emotion');
         $emotion = $emotionRepository->findOneBy(['emotion_name' => $data['emotion']]);
         $dream->setEmotion($emotion);
-
         $statisticsRepository = $entityManager->getRepository('App\Entity\UserStatistic');
         $statistics = $statisticsRepository->findOneBy(['id' => $user->getUserStatistics()->getId()]);
         $statistics->setDreamsAmount($statistics->getDreamsAmount() + 1);
         $entityManager->persist($statistics);
-
         $entityManager->persist($dream);
         $entityManager->flush();
 
