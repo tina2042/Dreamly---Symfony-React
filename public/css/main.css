@@ -149,27 +149,6 @@ data {
     width:40%;
 }
 
-.social-icons {
-    display: flex;
-    align-self: flex-end;
-    justify-content: space-around;
-    align-items: center;
-    margin: 0em 2em 1em 2em;
-}
-
-.social-icons > div {
-    cursor: pointer;
-    display: flex;
-}
-
-.social-icons > div > p {
-    margin: 0 1em;
-}
-
-.social-icons > div > i {
-    margin-top: 0.5em;
-}
-
 .friend-dream {
     border-radius: 10px;
     border: 1px solid rgba(0, 110, 233, 0.06);
@@ -260,9 +239,7 @@ data {
 }
 
 
-.comment-text {
-    margin-left: 1.5em;
-}
+
 
 .sally img {
 

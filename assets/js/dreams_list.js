@@ -52,7 +52,7 @@ class Dreams_list extends React.Component {
         return (
             <div className="dream-container">
                 {isLoading ? (
-                    <div className="loading-container">
+                    <div className="loading">
                         <Audio
                             height="120"
                             width="120"
