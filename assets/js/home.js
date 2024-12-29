@@ -353,7 +353,7 @@ class Home extends React.Component {
                 <div key={dreamId} className="friend-dream" data-id={dreamId}>
                     <div className="top">
                         <img alt="dream"
-                             src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"/>
+                             src={dream.owner.detail.photo} />
                         <p>{dream.owner.detail.name} {dream.owner.detail.surname}</p>
                         <h4>{dream.title}</h4>
                         <data>{formattedDate}</data>

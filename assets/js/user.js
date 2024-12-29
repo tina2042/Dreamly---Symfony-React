@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {createRoot} from "react-dom/client";
+import {BeatLoader} from "react-spinners";
 
 function UserProfile({user_id}) {
     const [userData, setUserData] = useState(null);
     const [showInfo, setShowInfo] = useState(false)
     const [showStat, setShowStat] = useState(false)
     const [userId, setUserId] = useState(undefined);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
@@ -39,6 +41,7 @@ function UserProfile({user_id}) {
             })
                 .then(response => {
                     setUserData(response.data);
+
                 })
                 .catch(error => {
                     console.error('Error fetching user data:', error);
@@ -60,6 +63,47 @@ function UserProfile({user_id}) {
             setShowStat(false)
         }else{
             setShowStat(true)
+        }
+    }
+
+    async function changePhoto() {
+        if(userId){
+            setIsLoading(true);
+            const id = userData.detail['@id'].split('/')[3];
+            console.log(id)
+            const token = localStorage.getItem('jwt');
+
+            let randomSeed= Math.floor(Math.random() * 1000);
+            axios.patch(`/api/user_details/${id}`,
+                {
+                    photo: `https://api.dicebear.com/9.x/thumbs/svg?seed=${randomSeed}`
+                },
+                {
+                    headers: {
+                        'accept': 'application/ld+json',
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/merge-patch+json'
+                    }
+                }
+            )
+                .then(response => {
+                    console.log('Response data:', response.data);
+                    setUserData(prevData => ({
+                        ...prevData,
+                        detail: {
+                            ...prevData.detail,
+                            photo: response.data.photo
+                        }
+                    }));
+
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                }).finally( ()=>{
+                    setIsLoading(false);
+                }
+                );
+
         }
     }
 
@@ -96,9 +140,11 @@ function UserProfile({user_id}) {
                                 <p>Email: {userData.email}</p>
                             </div>
                         </div>
-                        {/* Change photo */}
-                        <div>
-                            <p><i className="fa-solid fa-camera"></i> Change photo</p>
+                        <div onClick={() => changePhoto()}>
+                            <p className="change-avatar">
+                                <i className="fa-solid fa-camera"></i>
+                                {isLoading ? <BeatLoader/> : <span>Change photo</span>}
+                            </p>
                         </div>
                         {/* Statistics */}
                         <div onClick={()=> showStatistics()}>

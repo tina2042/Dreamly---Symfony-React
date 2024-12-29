@@ -117,3 +117,7 @@ img {
         display: none;
     }
 }
+
+.change-avatar span{
+    display: inline-block !important;
+}
