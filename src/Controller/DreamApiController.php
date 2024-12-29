@@ -15,10 +15,10 @@ use function Sodium\add;
 
 class DreamApiController extends AbstractController
 {
-    public function __invoke(Request $request, EntityManagerInterface $entityManager): Response
+    public function __invoke(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         if ($request->isMethod('POST')) {
-            return $this->add_dream($request, $entityManager);
+            return $this->add_dream($request, $entityManager, $serializer);
         } elseif ($request->isMethod('DELETE')) {
             return $this->remove_dream($request, $entityManager);
         } elseif ($request->isMethod('GET')){

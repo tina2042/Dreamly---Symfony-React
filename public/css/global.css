@@ -42,6 +42,7 @@ body {
 .unliked-my{
     color: white;
 }
+
 .buttons {
     cursor:pointer;
     display: flex;

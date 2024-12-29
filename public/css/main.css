@@ -208,6 +208,7 @@ data {
 
 .friend-dream > .bottom {
     display: flex;
+    flex-direction: column;
 }
 .bottom > p {
     max-height: 10em;
@@ -215,7 +216,7 @@ data {
     margin-top: 0.5em;
 }
 .friend-dream > .bottom > p {
-    margin-left: 14vw;
+    margin-left: 12vw;
     width: 61vw;
 }
 
@@ -364,9 +365,9 @@ data {
     color: #9a87e2;
 }
 .emotion-picker {
-    width: 135px;
+    width: 140px;
     display: flex;
-    gap: 0.5vw;
+    gap: 2px;
     align-items: center;
     flex-wrap: wrap;
 }

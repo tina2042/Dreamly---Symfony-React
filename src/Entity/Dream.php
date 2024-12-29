@@ -90,7 +90,7 @@ class Dream
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['dream:read'])]
+    #[Groups(['dream:read', 'comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
