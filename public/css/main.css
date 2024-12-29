@@ -364,7 +364,7 @@ data {
     color: #9a87e2;
 }
 .emotion-picker {
-    width: 25%;
+    width: 135px;
     display: flex;
     gap: 0.5vw;
     align-items: center;

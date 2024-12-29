@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
 use function Sodium\add;
 
 class DreamApiController extends AbstractController
@@ -63,7 +64,7 @@ class DreamApiController extends AbstractController
 
     #[Route('/api/add_dream', name: 'add_dream_api', methods: ['POST'])]
     #[IsGranted('ROLE_USER', message: 'You must be logged in to add a dream.')]
-    public function add_dream(Request $request, EntityManagerInterface $entityManager): Response
+    public function add_dream(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $data = json_decode($request->getContent(), true);
         $user = $this->getUser();
@@ -96,9 +97,12 @@ class DreamApiController extends AbstractController
         $entityManager->persist($dream);
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'ok'
+        // Serializacja całego obiektu
+        $dreamJson = $serializer->serialize($dream, 'json', [
+            'groups' => ['dream:read'], // Używamy grup serializacji, aby ograniczyć dane
         ]);
+
+        return new Response($dreamJson, 200, ['Content-Type' => 'application/json']);
     }
     #[Route('/api/remove_dream/{dream_id}', name:'remove_dream', methods: ['DELETE'])]
     public function remove_dream(Request $request, EntityManagerInterface $entityManager): Response

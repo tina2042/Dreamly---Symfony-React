@@ -36,7 +36,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ]
 )]
 #[ApiFilter(OrderFilter::class, properties: [
-    'date' => 'DESC', // Default order for the date field
+    'date' => 'DESC',
+    'id' => 'DESC'
 ])]
 #[ApiFilter(SearchFilter::class, properties: [
     'tags.name' => 'exact', // Filter dreams by the exact tag name
@@ -89,7 +90,7 @@ class Dream
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read'])]
+    #[Groups(['dream:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]

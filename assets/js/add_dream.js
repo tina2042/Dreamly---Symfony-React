@@ -11,7 +11,7 @@ class Add_dream extends React.Component {
             content: '',
             emotion: 'HAPPY',
             privacy: 'PUBLIC', // Default value
-            tags: ["sen"],
+            tags: ["dream"],
             inputTag: "",
             maxCharactersLengthTag: 20,
             maxLengthTags: 10,
@@ -33,15 +33,12 @@ class Add_dream extends React.Component {
     handleTagChange = (e) => {
         let value = e.target.value;
 
-
         if (value.includes(' ') || value.includes(',')) {
             value = value.trim().replace(/,$/, '').toLowerCase();
-
 
             if (value.length > 0) {
                 this.addTag(value);
             }
-
 
             this.setState({ inputTag: '' });
         } else {
@@ -102,11 +99,23 @@ class Add_dream extends React.Component {
             }
         })
             .then(response => {
-                // Handle success, maybe redirect or update state
-                window.location.href='/home';
+                const newDream = response.data;
+
+                // Notify the parent component (Home) about the new dream
+                if (this.props.onDreamAdded) {
+                    this.props.onDreamAdded(newDream);
+                }
+                // Clear the form or redirect
+                this.setState({
+                    title: '',
+                    content: '',
+                    emotion: 'HAPPY',
+                    privacy: 'PUBLIC',
+                    tags: ["dream"]
+                });
+                if( !window.location.href.endsWith('/home') ) window.location.href='/home';
             })
             .catch(error => {
-
                 // Handle error
                 console.error('Error adding dream:', error);
             });
@@ -188,6 +197,7 @@ class Add_dream extends React.Component {
                                         onChange={this.handleChange}>
                                     <option value="PUBLIC">Public</option>
                                     <option value="PRIVATE">Private</option>
+                                    <option value="FOR FRIENDS">For friends</option>
                                 </select>
                             </label>
                         </div>
@@ -202,9 +212,7 @@ class Add_dream extends React.Component {
         );
     }
 }
+export default  Add_dream;
 
 import {createRoot} from 'react-dom/client';
-
 createRoot(document.getElementById('root')).render(<Add_dream/>);
-
-

@@ -3,18 +3,14 @@ import axios from 'axios';
 import {createRoot} from 'react-dom/client';
 import Message from "./Message";
 import FriendSearch from "./FriendSearch";
-
+import Add_dream from "./add_dream";
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            title: '',
-            content: '',
-            emotion: 'HAPPY',
-            privacy: 'PUBLIC', // Default value
-            userDreams: {},
+            userDream: null,
             userFriendDreams: [],
             isLoading: {
                 dreams: true,
@@ -27,17 +23,6 @@ class Home extends React.Component {
             isFocused: false, // New state for tracking focus
             didUserLikedThis:  {},
             isAddingComment: null,
-            tags: ["sen" ],
-            inputTag: "",
-            maxCharactersLengthTag: 20,
-            maxLengthTags: 10,
-            errors: {
-                length: false,
-                lengthTags: false,
-                validChar: false,
-                already: false,
-                startChar: false
-            }
         };
     }
 
@@ -45,87 +30,6 @@ class Home extends React.Component {
         this.setState({
             [e.target.name]: e.target.value
         });
-    }
-
-    handleTagChange = (e) => {
-        let value = e.target.value;
-        if (value.includes(' ') || value.includes(',')) {
-            value = value.trim().replace(/,$/, '').toLowerCase();
-
-            if (value.length > 0) {
-                this.addTag(value);
-            }
-
-            this.setState({ inputTag: '' });
-        } else {
-            this.setState({
-                inputTag: value.slice(0, this.state.maxCharactersLengthTag)
-            });
-        }
-    };
-
-    addTag = (tag) => {
-        const { tags, maxCharactersLengthTag, maxLengthTags } = this.state;
-        const patternTag = /^[A-Za-z0-9ء-ي_ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/g;
-        let errors = {};
-
-        if (tag.length > maxCharactersLengthTag) {
-            errors.length = true;
-        } else if (/^_/.test(tag)) {
-            errors.startChar = true;
-        } else if (tags.length === maxLengthTags) {
-            errors.lengthTags = true;
-        } else if (!patternTag.test(tag)) {
-            errors.validChar = true;
-        } else if (tags.includes(tag)) {
-            errors.already = true;
-        } else {
-            this.setState({
-                tags: [...tags, tag],
-                errors: {}
-            });
-        }
-
-
-        this.setState({ errors });
-    };
-
-    removeTag = (tagToRemove) => {
-        this.setState({
-            tags: this.state.tags.filter(tag => tag !== tagToRemove)
-        });
-    };
-
-    handleSubmit = (e) => {
-        e.preventDefault();
-
-        const {title, content, emotion, privacy, tags} = this.state;
-        const token = localStorage.getItem('jwt');
-        axios.post('/api/add_dream', {
-            title,
-            content,
-            emotion,
-            privacy,
-            tags
-        }, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                alert('Dream has been added');
-                this.setState({
-                    title: '',
-                    content: '',
-                    emotion: 'HAPPY',
-                    privacy: 'PUBLIC',
-                    tags: ['sen']
-                });
-            })
-            .catch(error => {
-                console.error('Error adding dream:', error);
-            });
     }
 
     async componentDidMount() {
@@ -141,7 +45,7 @@ class Home extends React.Component {
         }
 
         axios
-            .get(`/api/dreams?order%5Bdate%5D=desc&page=1&itemsPerPage=1&owner.email=${(email)}`, {
+            .get(`/api/dreams?order%5Bdate%5D=desc&order%5Bid%5D=desc&page=1&itemsPerPage=1&owner.email=${(email)}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/ld+json",
@@ -162,10 +66,15 @@ class Home extends React.Component {
                     ...dream,
                     likesAmount: dream.likes.length,
                     commentsAmount: dream.comments.length
+
                 }));
+                let latestDream = null;
+                if (dreams.length > 0) {
+                    latestDream = dreams[dreams.length - 1];
+                }
                 // Update state with fetched dreams
                 this.setState({
-                    userDreams: dreams,
+                    userDream: latestDream,
                     isLoading: {...this.state.isLoading, dreams: false},
                 });
                 // Process likes from the returned dream data
@@ -237,7 +146,7 @@ class Home extends React.Component {
                             // Process likes from the returned dream data
                             const updatedDidUserLikedThis = {...this.state.didUserLikedThis};  // Initialize the object to store like data
                             friendsDreams.forEach((dream) => {
-                                const dreamId = dream["@id"].split("/").pop(); // Extract dream ID
+                                const dreamId = dream["id"]; // Extract dream ID
                                 dream.likes.forEach((like) => {
                                     const ownerEmail = like.owner.email;
                                     const likeId = like["@id"].split("/").pop();
@@ -274,6 +183,18 @@ class Home extends React.Component {
 
     }
 
+    handleNewDream = (newDream) => {
+        const dreamWithCounts = {
+            ...newDream,
+            likesAmount: newDream.likes?.length || 0,
+            commentsAmount: newDream.comments?.length || 0,
+        };
+        this.setState({
+            userDream: dreamWithCounts
+        });
+
+    };
+
     handleLikeAdd = async (dreamId, isMyDream) => {
 
         const token = localStorage.getItem('jwt');
@@ -309,14 +230,14 @@ class Home extends React.Component {
                     }));
                     if(isMyDream){
                         this.setState(prevState =>({
-                            userDreams:{
-                                ...this.state.userDreams, likesAmount: this.state.userDreams.likesAmount+1
+                            userDream:{
+                                ...this.state.userDream, likesAmount: this.state.userDream.likesAmount+1
                             }
                         }))
                     } else {
                         this.setState(prevState =>({
                             userFriendDreams: prevState.userFriendDreams.map(dream=>
-                            dream["@id"].split("/").pop() === dreamId
+                            dream["id"] === dreamId
                                 ? { ...dream, likesAmount: dream.likesAmount+1}
                                 :dream
                             )
@@ -353,14 +274,14 @@ class Home extends React.Component {
                 this.setState({ didUserLikedThis }); // Update the state with the new object
                 if(isMyDream){
                     this.setState(prevState =>({
-                        userDreams:{
-                            ...this.state.userDreams, likesAmount: this.state.userDreams.likesAmount-1
+                        userDream:{
+                            ...this.state.userDream, likesAmount: this.state.userDream.likesAmount-1
                         }
                     }))
                 } else {
                     this.setState(prevState =>({
                         userFriendDreams: prevState.userFriendDreams.map(dream=>
-                            dream["@id"].split("/").pop() === dreamId
+                            dream["id"] === dreamId
                                 ? { ...dream, likesAmount: dream.likesAmount-1}
                                 :dream
                         )
@@ -374,7 +295,7 @@ class Home extends React.Component {
     }
 
     render() {
-        const { userDreams, userFriendDreams, tags, inputTag, maxCharactersLengthTag, maxLengthTags, errors } = this.state;
+        const { userDream, userFriendDreams} = this.state;
         const UserDreamItem = ({dream}) => {
             const options = {
                 year: 'numeric',
@@ -384,7 +305,7 @@ class Home extends React.Component {
             const formattedDate = new Date(dream.date).toLocaleDateString(undefined, options);
             const { didUserLikedThis } = this.state;
             let liked = false;
-            const dreamId=dream["@id"].split("/").pop();
+            const dreamId=dream["id"];
             if(Object.keys(didUserLikedThis).includes(dreamId)){
                 liked = didUserLikedThis[dreamId].liked; // Check if the dream is liked
             }
@@ -503,9 +424,9 @@ class Home extends React.Component {
                                                     console.error('Error fetching dreams comments:', error);
                                                 });
 
-                                            let userDreams = [...this.state.userDreams];
-                                            userDreams.commentsAmount = latestDream.commentsAmount + 1;
-                                            this.setState({userDreams: userDreams});
+                                            let userDream = [...this.state.userDream];
+                                            userDream.commentsAmount = userDream.commentsAmount + 1;
+                                            this.setState({userDream: userDream});
 
                                             e.target.reset();
                                         })
@@ -528,7 +449,7 @@ class Home extends React.Component {
         const FriendDreamItem = ({dream}) => {
             const didUserLikedThis = this.state.didUserLikedThis;
             let liked = false;
-            const dreamId = dream["@id"].split("/").pop();
+            const dreamId = dream["id"];
             if (Object.keys(didUserLikedThis).includes(dreamId)) {
                 liked = didUserLikedThis[dreamId].liked; // Check if the dream is liked
             }
@@ -667,102 +588,10 @@ class Home extends React.Component {
                 </div>
             );
         }
-        const AddDreamForm = () => (
-            <div className="add-dream-form">
-                <form onSubmit={this.handleSubmit}>
-                    <input type="text" name="title" value={this.state.title} onChange={this.handleChange}
-                           placeholder="Enter title"/>
-                    <hr></hr>
-                    <section className="wrappers">
-                        <div className="tags">
-                            <div className={`wrapper-tags ${inputTag ? 'focus' : ''}`}>
-                                <div className="view-tags">
-                                    {tags.map((tag, index) => (
-                                        <span key={index} className="tag" data-tag={tag}>
-                                            {tag}
-                                            <i
-                                                className="fa fa-close"
-                                                onClick={() => this.removeTag(tag)}
-                                            ></i>
-                                        </span>
-                                    ))}
-                                    <input
-                                        type="text"
-                                        className="input-tag"
-                                        value={inputTag}
-                                        onChange={this.handleTagChange}
-                                        onKeyUp={(e) => e.key === 'Enter' && this.addTag(e)}
-                                        placeholder="Add tag"
-                                    />
-                                </div>
-                            </div>
-
-                            {this.state.errors.length &&
-                                <div className="show-error length">Tag must be between 1 and 20 characters.</div>}
-                            {this.state.errors.lengthTags &&
-                                <div className="show-error lengthTags">You cannot add more than 10 tags.</div>}
-                            {this.state.errors.validChar &&
-                                <div className="show-error validChar">Use only letters or numbers.</div>}
-                            {this.state.errors.already && <div className="show-error already">This tag is already added.</div>}
-                            {this.state.errors.startChar &&
-                                <div className="show-error startChar">Tag must start with a letter.</div>}
-
-                            <div className="show-count-all">
-                                <div className="count-character-tag">
-                                    <span>{maxCharactersLengthTag - inputTag.length}</span> characters left.
-                                </div>
-                                <div className="count-tags">
-                                    <span>{maxLengthTags - tags.length}</span> tags left.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="emotion-picker">
-                            <input type="radio" id="HAPPY" name="emotion" value="HAPPY"
-                                   onChange={this.handleChange}/>
-                            <label htmlFor="HAPPY" className="emoji">😊</label>
-                            <input type="radio" id="NEUTRAL" name="emotion" value="NEUTRAL"
-                                   onChange={this.handleChange}/>
-                            <label htmlFor="NEUTRAL" className="emoji">😐</label>
-                            <input type="radio" id="SAD" name="emotion" value="SAD"
-                                   onChange={this.handleChange}/>
-                            <label htmlFor="SAD" className="emoji">😢</label>
-                        </div>
-
-                    </section>
-                    <hr></hr>
-                    <textarea name="content" minLength={5} value={this.state.content} onChange={this.handleChange}
-                              placeholder="Write your dream here"></textarea>
-                    <div id="buttons">
-
-                        <div className="dropdown-list">
-                            <label htmlFor="privacy">
-                                <select name="privacy" id="privacy" value={this.state.privacy}
-                                        onChange={this.handleChange}>
-                                    <option value="PUBLIC">Public</option>
-                                    <option value="PRIVATE">Private</option>
-                                    <option value="FOR FRIENDS">For friends</option>
-                                </select>
-                            </label>
-                        </div>
-                        <button type="button" className="cancel-btn" onClick={() => {
-                            window.location.href = '/home'
-                        }}>Cancel
-                        </button>
-                        <button type="submit" className="submit">Add Dream</button>
-                    </div>
-                </form>
-            </div>
-        );
-
-        let latestDream = null;
-        if (userDreams.length > 0) {
-            latestDream = userDreams[userDreams.length - 1];
-        }
 
         return (
             <div>
-                <AddDreamForm />
+                <Add_dream onDreamAdded={this.handleNewDream} />
                 {this.state.isLoading.dreams ? (
                     <div>
                         <div className="my-dream-top">
@@ -777,8 +606,8 @@ class Home extends React.Component {
                         </div>
                     </div>
                 ) : (
-                    latestDream != null ? (
-                        <UserDreamItem dream={latestDream}/>
+                    userDream != null ? (
+                        <UserDreamItem key={userDream.id} dream={userDream}/>
                     ) : (
                         <div>
                             <div className="my-dream-top">
