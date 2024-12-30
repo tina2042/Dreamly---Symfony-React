@@ -1,6 +1,7 @@
 import '../styles/app.css';
 import React from 'react';
 import axios from 'axios';
+import {BeatLoader} from "react-spinners";
 
 class Add_dream extends React.Component {
     constructor(props) {
@@ -21,7 +22,8 @@ class Add_dream extends React.Component {
                 validChar: false,
                 already: false,
                 startChar: false
-            }
+            },
+            isAdding:false
         };
     }
 
@@ -86,6 +88,7 @@ class Add_dream extends React.Component {
 
         const { title, content, emotion, privacy, tags } = this.state;
         const token = localStorage.getItem('jwt');
+        this.setState( {isAdding: true});
         axios.post('/api/add_dream', {
             title,
             content,
@@ -118,6 +121,8 @@ class Add_dream extends React.Component {
             .catch(error => {
                 // Handle error
                 console.error('Error adding dream:', error);
+            }).finally(()=>{
+                this.setState( {isAdding: false})
             });
     }
 
@@ -205,7 +210,10 @@ class Add_dream extends React.Component {
                             window.location.href = '/home'
                         }}>Cancel
                         </button>
-                        <button type="submit" className="submit">Add Dream</button>
+                        <button type="submit" className="submit">
+                            {this.state.isAdding ? <BeatLoader /> :
+                                <span>Add Dream </span> } </button>
+
                     </div>
                 </form>
             </div>

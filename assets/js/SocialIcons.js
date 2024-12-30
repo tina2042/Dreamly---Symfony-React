@@ -31,6 +31,11 @@ class SocialIcons extends Component {
                     this.props.onLikeChange(dreamId, 1, isMyDream, likeId );
                 }
             } catch (error) {
+                if(error.response.data.code===401){
+                    window.location.replace("/logout");
+                    console.error("User not authenticated or email missing in localStorage");
+                    alert("Your session is expired");
+                }else
                 console.error('Error adding like:', error);
             } finally {
                 this.setState({ isSubmittingLike: false });
@@ -55,6 +60,12 @@ class SocialIcons extends Component {
                 this.props.onLikeChange(dreamId, -1, isMyDream, 0);
             }
         } catch (error) {
+            if(error.response.data.code===401){
+                window.location.replace("/logout");
+                console.error("User not authenticated or email missing in localStorage");
+                alert("Your session is expired");
+            }else
+
             console.error('Error removing like:', error);
         } finally {
             this.setState({ isSubmittingLike: false });
@@ -90,7 +101,12 @@ class SocialIcons extends Component {
                 e.target.reset();
             })
             .catch((error) => {
-                console.error(error);
+                if(error.response.data.code===401){
+                    window.location.replace("/logout");
+                    console.error("User not authenticated or email missing in localStorage");
+                    alert("Your session is expired");
+                }else
+                    console.error(error);
             })
             .finally(() => {
                 this.setState({ isSubmittingComment: false });

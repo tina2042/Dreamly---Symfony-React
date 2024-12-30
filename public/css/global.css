@@ -522,18 +522,41 @@ button:hover , .dropdown-list:hover{
     justify-content: center;
     justify-items: center ;
 }
+.load-more{
+    background: #C9B4EC;
+    width: 75%;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-bottom: 2em;
+    border-radius: 35.765px;
+    margin-top: -1em;
+}
 @media (max-width: 700px) {
+    #root > div{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #root{
+        margin-top:0;
+    }
+    .navbar{
+        bottom:0 !important;
+        top: unset;
+    }
     .nav-link > span {
         display: none;
     }
 
     .floating-button {
-        right: 40%;
-        bottom: 1em;
-        width: auto;
+        right: unset;
+        bottom: 9vh;
+        width: 40%;
+        box-shadow: 0 0 16px #9a87e2;
     }
 
-    .floating-button  {
-        width: auto;
+    .load-more{
+        width:90%;
+        margin-bottom:15vh;
     }
 }

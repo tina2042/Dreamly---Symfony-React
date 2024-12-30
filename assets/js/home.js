@@ -5,6 +5,7 @@ import Message from "./Message";
 import FriendSearch from "./FriendSearch";
 import Add_dream from "./add_dream";
 import SocialIcons from "./SocialIcons";
+import LoadMore from "./LoadMore";
 class Home extends React.Component {
 
 
@@ -24,6 +25,8 @@ class Home extends React.Component {
             isFocused: false, // New state for tracking focus
             didUserLikedThis:  {},
             isAddingComment: null,
+            friendsEmails:[],
+            hasMore:true
         };
     }
 
@@ -46,17 +49,25 @@ class Home extends React.Component {
         }
 
         axios
-            .get(`/api/dreams?order%5Bdate%5D=desc&order%5Bid%5D=desc&page=1&itemsPerPage=1&owner.email=${(email)}`, {
+            .get(`/api/dreams`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/ld+json",
-                },
+                }, params:{
+                    'order': {
+                        'date': 'desc',
+                        'id': 'desc'
+                    },
+                    'page': 1,
+                    'itemsPerPage':1,
+                    'owner.email': email
+                    }
             })
             .then((response) => {
                 const fetchData = response.data;
                 let dreams = fetchData["hydra:member"];
                 if (dreams.length === 0) {
-                    console.log("No dreams found for the user");
+
                     this.setState({
                         isLoading: {...this.state.isLoading, dreams: false},
                     });
@@ -101,22 +112,33 @@ class Home extends React.Component {
                 this.setState({didUserLikedThis});
             })
             .catch((error) => {
-                console.error("Error fetching user dreams:", error);
-            }
+                if(error.response.data.code===401){
+                    window.location.replace("/logout");
+                    console.error("User not authenticated or email missing in localStorage");
+                    alert("Your session is expired");
+                } else console.error(error)
+                }
             );
 
         axios
-            .get(`/api/friends?page=1%itemsPerPage=30&user_1.email=${(email)}`, {
+            .get(`/api/friends`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/ld+json'
-                },
+                }, params: {
+                    'user_1.email[]': email,
+                    'itemsPerPage': 30,
+                    'page': 1,
+                }
             })
             .then((response)=>{
                 const fetchData = response.data;
                 const friends = fetchData['hydra:member'];
                 const friendEmails = friends.map(friend => friend.user_2.email);
                 if(friendEmails.length>0) {
+                    this.setState({
+                        friendsEmails: friendEmails
+                    })
                     axios.get('/api/dreams', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -124,16 +146,24 @@ class Home extends React.Component {
                         },
                         params: {
                             'owner.email[]': friendEmails,
-                            'privacy.privacy_name[]': ['PUBLIC', 'FOR FRIENDS']
+                            'privacy.privacy_name[]': ['PUBLIC', 'FOR FRIENDS'],
+                            'itemsPerPage': 5,
+                            'page': 1,
+                            'order': {
+                                'date': 'desc',
+                                'id': 'asc'
+                            }
                         }
                     })
                         .then((dreamResponse) => {
                             let friendsDreams = dreamResponse.data['hydra:member'];
-
+                            if(!("hydra:next" in dreamResponse.data["hydra:view"])){
+                                this.setState({hasMore: false});
+                            }
                             friendsDreams = friendsDreams.map(dream => ({
                                 ...dream,
                                 likesAmount: dream.likes.length,
-                                commentsAmount: dream.comments.length
+                                commentsAmount: dream.comments.length,
                             }));
 
                             this.setState({
@@ -166,8 +196,12 @@ class Home extends React.Component {
                             this.setState({didUserLikedThis: updatedDidUserLikedThis});
                         })
                         .catch((error) => {
-                                console.error("Error fetching friends dreams:", error);
-                            }
+                            if(error.response.data.code===401){
+                                window.location.replace("/logout");
+                                console.error("User not authenticated or email missing in localStorage");
+                                alert("Your session is expired");
+                            } else console.error(error)
+                        }
                         );
                 } else {
                     this.setState({
@@ -178,7 +212,11 @@ class Home extends React.Component {
                     });
                 }
             }).catch((error) => {
-                console.error("Error fetching friends:", error);
+            if(error.response.data.code===401){
+                window.location.replace("/logout");
+                console.error("User not authenticated or email missing in localStorage");
+                alert("Your session is expired");
+            } else console.error("Error fetching friends:", error);
             }
         );
 
@@ -234,9 +272,19 @@ class Home extends React.Component {
             }));
         }
     };
+    handleMoreDreams = (dreams) => {
+        dreams = dreams.map(dream => ({
+            ...dream,
+            likesAmount: dream.likes.length,
+            commentsAmount: dream.comments.length,
+        }));
 
+        this.setState((prevState) => ({
+            userFriendDreams: [...prevState.userFriendDreams, ...dreams],
+        }));
+    }
     handleCommentAdded = (dreamId, isMyDream, fetchData) => {
-        console.log(fetchData);
+
         if(isMyDream){
             this.setState((prevState) => ({
                 userDream: {
@@ -450,19 +498,32 @@ class Home extends React.Component {
                         <FriendSearch />
                     </div>
                 </div>
-                {this.state.isLoading.friendsDreams ? (
-                    <div className="friend-dream">
-                        <Message message="Loading friends' dreams..." isLoading={true} />
-                    </div>
-                ) : userFriendDreams.length > 0 ? (
-                    userFriendDreams.map(dream => (
-                        <FriendDreamItem key={dream.id} dream={dream} />
-                    ))
-                ) : (
-                    <div className="friend-dream">
-                        <Message message="Add more friends to see their dreams" isLoading={false} />
-                    </div>
-                )}
+                {
+                    this.state.isLoading.friendsDreams ?
+                        <div className="friend-dream">
+                            <Message message="Loading friends' dreams..." isLoading={true} />
+                        </div> :
+                        (
+                            userFriendDreams.length > 0 ?
+                                <>
+                                    {
+                                        userFriendDreams.map(dream =>
+                                            <FriendDreamItem key={dream.id} dream={dream} />
+                                        )
+                                    }
+                                    {
+                                        this.state.hasMore &&
+                                        <LoadMore
+                                            friendsEmails={this.state.friendsEmails}
+                                            handleMoreDreams={this.handleMoreDreams}
+                                        />
+                                    }
+                                </> :
+                                <div className="friend-dream">
+                                    <Message message="Add more friends to see their dreams" isLoading={false} />
+                                </div>
+                        )
+                }
 
                 <button className="floating-button" onClick={() => {
                     window.location.href = '/add_dream'
