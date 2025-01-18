@@ -29,6 +29,9 @@ class Dreams_list extends React.Component {
                 const fetchData = response.data["hydra:member"];
                 this.setState({userDreams: fetchData,
                                     isLoading: false})
+                if(!("hydra:next" in response.data["hydra:view"])){
+                    this.setState({hasMore: false});
+                }
             })
             .catch(error => {
                 console.error('Error fetching user dreams:', error);
@@ -86,6 +89,7 @@ class Dreams_list extends React.Component {
                             <LoadMore
                                 friendsEmails={email}
                                 handleMoreDreams={this.handleMoreDreams}
+                                hasMore={this.state.hasMore}
                             />}
                     </>
                 ) : (

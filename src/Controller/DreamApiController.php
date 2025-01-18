@@ -31,7 +31,6 @@ class DreamApiController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You must be logged in to see dreams.')]
     private function get_user_dreams(Request $request, EntityManagerInterface $entityManager): Response
     {
-
         $userId = $this->getUser()->getId();
         $userRepository = $entityManager->getRepository(User::class);
         $user = $userRepository->find($userId);
@@ -58,7 +57,6 @@ class DreamApiController extends AbstractController
                 'tags' => $tags
             ];
         }
-
         return new JsonResponse($dreamsData);
     }
 

@@ -74,7 +74,6 @@ class Add_dream extends React.Component {
             });
         }
 
-
         this.setState({ errors });
     };
 
@@ -108,6 +107,7 @@ class Add_dream extends React.Component {
                 if (this.props.onDreamAdded) {
                     this.props.onDreamAdded(newDream);
                 }
+
                 // Clear the form or redirect
                 this.setState({
                     title: '',
@@ -212,7 +212,8 @@ class Add_dream extends React.Component {
                         </button>
                         <button type="submit" className="submit">
                             {this.state.isAdding ? <BeatLoader /> :
-                                <span>Add Dream </span> } </button>
+                                <span>Add Dream </span> }
+                        </button>
 
                     </div>
                 </form>

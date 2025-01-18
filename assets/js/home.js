@@ -516,6 +516,7 @@ class Home extends React.Component {
                                         <LoadMore
                                             friendsEmails={this.state.friendsEmails}
                                             handleMoreDreams={this.handleMoreDreams}
+                                            hasMore={this.state.hasMore}
                                         />
                                     }
                                 </> :

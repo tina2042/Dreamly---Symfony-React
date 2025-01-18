@@ -8,7 +8,7 @@ export default class LoadMore extends React.Component {
         super(props);
         this.state = {
             isLoading: false,
-            hasMore: true,
+            hasMore: this.props.hasMore,
             currentPage: 1,
 
         };
@@ -16,8 +16,13 @@ export default class LoadMore extends React.Component {
     handleLoadMore = () => {
         const token = localStorage.getItem("jwt");
         const ownerEmails = this.props.friendsEmails
+        const loggedEmail = localStorage.getItem("email");
 
         if(ownerEmails.length>0) {
+            let visibility  =['PUBLIC', 'FOR FRIENDS']
+            if(loggedEmail===ownerEmails[0]){
+                visibility = ['PUBLIC', 'FOR FRIENDS', 'PRIVATE'];
+            }
             const nextPage = this.state.currentPage + 1;
 
             this.setState({ isLoading:  true });
@@ -28,7 +33,7 @@ export default class LoadMore extends React.Component {
                 },
                 params: {
                     'owner.email[]': ownerEmails,
-                    'privacy.privacy_name[]': ['PUBLIC', 'FOR FRIENDS'],
+                    'privacy.privacy_name[]': visibility,
                     'order[date]': 'desc',
                     'order[id]': 'desc',
                     'itemsPerPage': 5,

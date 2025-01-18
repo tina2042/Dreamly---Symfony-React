@@ -165,7 +165,7 @@ function Calendar() {
                     height="150"
                     width="150"
                     radius="9"
-                    color="#9a87e2"
+                    color="#263238"
                     ariaLabel="three-dots-loading"
                     wrapperStyle
                     wrapperClass

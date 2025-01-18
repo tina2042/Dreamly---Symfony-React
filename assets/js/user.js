@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {createRoot} from "react-dom/client";
 import {BeatLoader} from "react-spinners";
+import {Audio} from "react-loader-spinner";
 
 function UserProfile({user_id}) {
     const [userData, setUserData] = useState(null);
@@ -9,10 +10,11 @@ function UserProfile({user_id}) {
     const [showStat, setShowStat] = useState(false)
     const [userId, setUserId] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingPhoto, setIsLoadingPhoto] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
-
+        setIsLoading(true);
         // Fetch data for the current user
         axios.get(`/api/user_id`, {
             headers: {
@@ -25,13 +27,17 @@ function UserProfile({user_id}) {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
-            });
+            }).finally(()=>{
+                setIsLoading(false);
+            }
+        );
 
     }, []);
 
 
     useEffect(()=>{
         if(userId){
+            setIsLoading(true)
             const token = localStorage.getItem('jwt');
             axios.get(`/api/users/${userId}`, {
                 headers: {
@@ -45,7 +51,9 @@ function UserProfile({user_id}) {
                 })
                 .catch(error => {
                     console.error('Error fetching user data:', error);
-                });
+                }).finally(()=>{
+                setIsLoading(false)
+            });
         }
     },[userId])
 
@@ -68,7 +76,7 @@ function UserProfile({user_id}) {
 
     async function changePhoto() {
         if(userId){
-            setIsLoading(true);
+            setIsLoadingPhoto(true);
             const id = userData.detail['@id'].split('/')[3];
             console.log(id)
             const token = localStorage.getItem('jwt');
@@ -100,7 +108,7 @@ function UserProfile({user_id}) {
                 .catch(error => {
                     console.error('Error fetching user data:', error);
                 }).finally( ()=>{
-                    setIsLoading(false);
+                    setIsLoadingPhoto(false);
                 }
                 );
 
@@ -110,7 +118,19 @@ function UserProfile({user_id}) {
     return (
 
         <div className="one-panel">
-            {userData && (
+            {isLoading ? (
+                    <div className="loading">
+                        <Audio
+                            height="120"
+                            width="120"
+                            radius="9"
+                            color="#263238"
+                            ariaLabel="three-dots-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                        />
+                    </div>
+                ) : userData && (
                 <div className="user_settings">
                     <div className="top">
                         <div className="profile-photo">
@@ -143,7 +163,7 @@ function UserProfile({user_id}) {
                         <div onClick={() => changePhoto()}>
                             <p className="change-avatar">
                                 <i className="fa-solid fa-camera"></i>
-                                {isLoading ? <BeatLoader/> : <span>Change photo</span>}
+                                {isLoadingPhoto ? <BeatLoader/> : <span>Change photo</span>}
                             </p>
                         </div>
                         {/* Statistics */}

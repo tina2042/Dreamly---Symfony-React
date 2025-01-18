@@ -79,7 +79,7 @@ button {
     cursor: pointer;
     height: calc(100vh * (50 / 900));
     border: none;
-    border-radius: 9px;
+    border-radius: 27px;
     background: #A6A2DA;
     width: 100%;
     color: #FFF;
